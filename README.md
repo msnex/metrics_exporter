@@ -1,2 +1,2 @@
-# process_exporter
-Exporter for process metrics
+# metrics_exporter
+Exporter for some metrics
