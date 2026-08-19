@@ -32,6 +32,28 @@ fn main() -> Result<()> {
 
     init_ctrlc()?;
 
+    let processes = procfs::process::get_all_processes()?;
+    for process in processes {
+        println!(
+            "pid: {} comm: {}, cmdline: {}",
+            process.pid(),
+            str::from_utf8(&process.comm()?)
+                .unwrap_or("")
+                .trim_end_matches("\0"),
+            process.cmdline()?
+        );
+
+        for child in process.tasks()? {
+            println!(
+                "\tpid: {} comm: {}",
+                child.pid(),
+                str::from_utf8(&child.comm()?)
+                    .unwrap_or("")
+                    .trim_end_matches("\0")
+            );
+        }
+    }
+
     while RUNNING.get().unwrap().load(Ordering::SeqCst) {
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
