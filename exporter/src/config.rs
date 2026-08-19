@@ -5,6 +5,7 @@ use std::sync::OnceLock;
 
 static CONFIG: OnceLock<Config> = OnceLock::new();
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 pub struct OTLPCfg {
     pub protocol: String,
@@ -26,6 +27,7 @@ pub struct LogCfg {
     pub file: Option<LogFileCfg>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
     pub otlp: OTLPCfg,
