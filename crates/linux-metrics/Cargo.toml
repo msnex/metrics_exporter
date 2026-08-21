@@ -1,0 +1,13 @@
+[package]
+name = "linux-metrics"
+version = "0.1.0"
+edition = "2024"
+description = "Linux system and per-process metric collectors built on top of procfs"
+
+[dependencies]
+lexical = { workspace = true }
+metrics-framework = { path = "../metrics-framework" }
+opentelemetry = { workspace = true }
+procfs = { path = "../procfs" }
+smallvec = { workspace = true }
+tracing = { workspace = true }

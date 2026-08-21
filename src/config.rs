@@ -1,15 +1,41 @@
 use crate::args;
 use anyhow::Result;
 use serde::Deserialize;
+use std::collections::HashMap;
 use std::sync::OnceLock;
 
 static CONFIG: OnceLock<Config> = OnceLock::new();
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
-pub struct OTLPCfg {
-    pub protocol: String,
+#[serde(rename_all = "lowercase")]
+pub enum OtlpProtocol {
+    Grpc,
+    #[serde(alias = "http/protobuf")]
+    Http,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct RuntimeCfg {
+    pub worker_threads: usize,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct OtlpCfg {
+    pub protocol: OtlpProtocol,
+    #[serde(default = "default_otlp_timeout")]
+    pub timeout: u64,
+    #[serde(default = "default_otlp_interval_secs")]
+    pub interval_secs: u64,
     pub endpoint: String,
+    pub headers: Option<HashMap<String, String>>,
+}
+
+fn default_otlp_timeout() -> u64 {
+    5
+}
+
+fn default_otlp_interval_secs() -> u64 {
+    1
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -27,11 +53,28 @@ pub struct LogCfg {
     pub file: Option<LogFileCfg>,
 }
 
-#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct MetricsProcessCfg {
+    pub enable: bool,
+    #[serde(default = "default_interval_secs")]
+    pub interval_secs: u64,
+}
+
+fn default_interval_secs() -> u64 {
+    1
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct MetricsCfg {
+    pub process: Option<MetricsProcessCfg>,
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
-    pub otlp: OTLPCfg,
+    pub runtime: RuntimeCfg,
+    pub otlp: OtlpCfg,
     pub log: LogCfg,
+    pub metrics: MetricsCfg,
 }
 
 impl Config {

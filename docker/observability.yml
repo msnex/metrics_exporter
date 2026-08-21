@@ -1,0 +1,29 @@
+name: observability
+
+services:
+  grafana:
+    image: grafana/grafana:13.2
+    container_name: grafana
+    network_mode: host
+    depends_on:
+      - victoriametrics
+    # environment:
+    #   - GF_PLUGINS_PREINSTALL=victoriametrics-metrics-datasource@0.25.2
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    restart: unless-stopped
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.150.0
+    container_name: victoriametrics
+    network_mode: host
+    volumes:
+      - vmdata:/storage
+    command:
+      - "--httpListenAddr=0.0.0.0:8428"
+      - "--storageDataPath=/storage"
+    restart: unless-stopped
+
+volumes:
+  grafana_storage: {}
+  vmdata: {}

@@ -1,0 +1,11 @@
+[package]
+name = "metrics-framework"
+version = "0.1.0"
+edition = "2024"
+description = "Data-source-agnostic metric collection framework"
+
+[dependencies]
+opentelemetry = { workspace = true }
+parking_lot = { workspace = true }
+smallvec = { workspace = true }
+tracing = { workspace = true }

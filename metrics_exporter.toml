@@ -1,0 +1,26 @@
+[runtime]
+worker_threads = 2
+
+[otlp]
+# valid values: http/protobuf or grpc
+protocol = "http/protobuf"
+endpoint = "http://127.0.0.1:8428/opentelemetry/v1/metrics"
+interval_secs = 1
+timeout = 5
+
+[metrics.process]
+enable = true
+interval_secs = 1
+
+[log]
+# valid values: stdout, file
+writer = "stdout"
+# valid values: trace, debug, info, warn, error, off
+level = "info"
+
+[log.file]
+# valid values: minutely, hourly, daily, weekly, never
+rotation = "daily"
+max_log_files = 5
+directory = "/tmp"
+filename = "metrics_exporter.log"
