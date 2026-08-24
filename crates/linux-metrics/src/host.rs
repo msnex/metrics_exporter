@@ -9,6 +9,7 @@
 use metrics_framework::{Collector, ItemKind, MetricItem, Number, SampleGroup};
 use opentelemetry::KeyValue;
 use smallvec::smallvec;
+use std::collections::HashSet;
 use std::time::Duration;
 use tracing::debug;
 
@@ -51,19 +52,24 @@ static ITEMS: &[MetricItem] = &[
     },
 ];
 
-pub struct ProcessCollector {
+#[derive(Default)]
+pub struct ProcessFilter {
+    pub include_comms: HashSet<String>,
+}
+
+pub struct HostCollector {
     interval: Duration,
 }
 
-impl ProcessCollector {
+impl HostCollector {
     pub fn new(interval: Duration) -> Self {
         Self { interval }
     }
 }
 
-impl Collector for ProcessCollector {
+impl Collector for HostCollector {
     fn name(&self) -> &'static str {
-        "process"
+        "linux-host"
     }
 
     fn interval(&self) -> Duration {
@@ -138,7 +144,7 @@ mod tests {
 
     #[test]
     fn process_collect_contains_self_io() {
-        let mut collector = ProcessCollector::new(Duration::from_secs(1));
+        let mut collector = HostCollector::new(Duration::from_secs(1));
         let mut out = Vec::new();
         collector.collect(&mut out);
 

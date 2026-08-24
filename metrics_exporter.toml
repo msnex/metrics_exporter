@@ -8,9 +8,14 @@ endpoint = "http://127.0.0.1:8428/opentelemetry/v1/metrics"
 interval_secs = 1
 timeout = 5
 
-[metrics.process]
+[metrics.host]
 enable = true
 interval_secs = 1
+
+[metrics.host.process]
+enable = true
+include_comms = ["NTA-Main"]
+child = true
 
 [log]
 # valid values: stdout, file

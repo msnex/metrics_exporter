@@ -1,7 +1,7 @@
 use crate::config::MetricsCfg;
 use anyhow::Result;
-use linux_metrics::ProcessCollector;
-use metrics_framework::Registry;
+use linux_metrics::HostCollector;
+use metrics_framework::{Collector, Registry};
 use opentelemetry::metrics::Meter;
 use std::time::Duration;
 use tracing::info;
@@ -14,16 +14,13 @@ use tracing::info;
 pub fn register_collectors(cfg: &MetricsCfg, meter: &Meter) -> Result<Registry> {
     let mut registry = Registry::new();
 
-    if let Some(process_cfg) = cfg.process.as_ref()
-        && process_cfg.enable
+    if let Some(host_cfg) = cfg.host.as_ref()
+        && host_cfg.enable
     {
-        registry.add(
-            Box::new(ProcessCollector::new(Duration::from_secs(
-                process_cfg.interval_secs,
-            ))),
-            meter,
-        )?;
-        info!("collector registered: process");
+        let collector = HostCollector::new(Duration::from_secs(host_cfg.interval_secs));
+        let collector_name = collector.name();
+        registry.add(Box::new(collector), meter)?;
+        info!("collector registered: {}", collector_name);
     }
 
     Ok(registry)

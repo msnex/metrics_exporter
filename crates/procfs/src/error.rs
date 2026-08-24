@@ -1,7 +1,7 @@
 use thiserror::Error;
 
 #[derive(Debug, Error)]
-pub enum ProcFsError {
+pub enum ProcError {
     #[error("io error: {0}")]
     IOError(#[from] std::io::Error),
     #[error("lexical error: {0}")]

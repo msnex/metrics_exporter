@@ -54,10 +54,19 @@ pub struct LogCfg {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct MetricsProcessCfg {
+pub struct MetricsHostProcessCfg {
+    pub enable: bool,
+    pub child: bool,
+    #[serde(default)]
+    pub include_comms: Vec<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct MetricsHostCfg {
     pub enable: bool,
     #[serde(default = "default_interval_secs")]
     pub interval_secs: u64,
+    pub process: Option<MetricsHostProcessCfg>,
 }
 
 fn default_interval_secs() -> u64 {
@@ -66,7 +75,7 @@ fn default_interval_secs() -> u64 {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct MetricsCfg {
-    pub process: Option<MetricsProcessCfg>,
+    pub host: Option<MetricsHostCfg>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

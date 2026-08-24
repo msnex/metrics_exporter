@@ -8,6 +8,7 @@
 //! cycle reads each `/proc/<pid>/` file at most once; per-tick allocations
 //! are limited to one owned `String` (comm) per process.
 
-pub mod process;
+mod host;
 
-pub use process::ProcessCollector;
+pub use host::HostCollector;
+pub use host::ProcessFilter;

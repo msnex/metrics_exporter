@@ -144,28 +144,26 @@ impl Registry {
         }
 
         let stop = Arc::new(AtomicBool::new(false));
-        let handle = std::thread::Builder::new()
-            .name(format!("collector-{name}"))
-            .spawn({
-                let cache = cache.clone();
-                let stop = stop.clone();
-                let mut collector = collector;
-                let interval = collector.interval();
-                move || {
-                    // Reused across ticks: no per-tick `Vec` allocation after
-                    // the capacity stabilizes.
-                    let mut scratch: Vec<SampleGroup> = Vec::new();
-                    while !stop.load(Ordering::SeqCst) {
-                        let started = Instant::now();
-                        sample_once(&mut *collector, &cache, &mut scratch);
-                        let elapsed = started.elapsed();
-                        if elapsed < interval {
-                            std::thread::sleep(interval - elapsed);
-                        }
+        let handle = std::thread::Builder::new().name(format!("{name}")).spawn({
+            let cache = cache.clone();
+            let stop = stop.clone();
+            let mut collector = collector;
+            let interval = collector.interval();
+            move || {
+                // Reused across ticks: no per-tick `Vec` allocation after
+                // the capacity stabilizes.
+                let mut scratch: Vec<SampleGroup> = Vec::new();
+                while !stop.load(Ordering::SeqCst) {
+                    let started = Instant::now();
+                    sample_once(&mut *collector, &cache, &mut scratch);
+                    let elapsed = started.elapsed();
+                    if elapsed < interval {
+                        std::thread::sleep(interval - elapsed);
                     }
-                    info!("collector exited: {}", collector.name());
                 }
-            })?;
+                info!("collector exited: {}", collector.name());
+            }
+        })?;
 
         self.entries.push(Entry {
             stop,

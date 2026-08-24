@@ -4,4 +4,4 @@ mod traits;
 
 pub(crate) const LINUX_PROC_PATH: &str = "/proc";
 
-pub type ProcFsResult<T> = Result<T, error::ProcFsError>;
+pub type ProcResult<T> = Result<T, error::ProcError>;

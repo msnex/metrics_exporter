@@ -1,5 +1,5 @@
 use crate::LINUX_PROC_PATH;
-use crate::ProcFsResult;
+use crate::ProcResult;
 use crate::traits::FileRead;
 use std::path::Path;
 use std::path::PathBuf;
@@ -31,32 +31,32 @@ impl Process {
     }
 
     #[inline]
-    pub fn comm(&self) -> ProcFsResult<Comm> {
+    pub fn comm(&self) -> ProcResult<Comm> {
         let path = self.root.join("comm");
         util::parse_comm(&path)
     }
 
     #[inline]
-    pub fn cmdline(&self) -> ProcFsResult<String> {
+    pub fn cmdline(&self) -> ProcResult<String> {
         let path = self.root.join("cmdline");
         util::parse_cmdline(&path)
     }
 
     #[inline]
-    pub fn io(&self) -> ProcFsResult<Io> {
+    pub fn io(&self) -> ProcResult<Io> {
         let path = self.root.join("io");
         FileRead::from_file(&path)
     }
 
     #[inline]
-    pub fn tasks(&self) -> ProcFsResult<Vec<Self>> {
+    pub fn tasks(&self) -> ProcResult<Vec<Self>> {
         let path = self.root.join("task");
         task::get_process_tasks(&path, Some(self.pid))
     }
 }
 
 #[inline]
-pub fn get_all_processes() -> ProcFsResult<Vec<Process>> {
+pub fn get_all_processes() -> ProcResult<Vec<Process>> {
     let proc_dir = Path::new(LINUX_PROC_PATH);
     task::get_process_tasks(&proc_dir, None)
 }

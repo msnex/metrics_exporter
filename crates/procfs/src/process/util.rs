@@ -1,9 +1,9 @@
-use crate::ProcFsResult;
-use crate::error::ProcFsError;
+use crate::ProcResult;
+use crate::error::ProcError;
 use crate::process::Comm;
 use std::path::Path;
 
-pub fn parse_comm(path: &Path) -> ProcFsResult<Comm> {
+pub fn parse_comm(path: &Path) -> ProcResult<Comm> {
     match std::fs::read(&path) {
         Ok(content) => {
             let mut comm = Comm::default();
@@ -12,11 +12,11 @@ pub fn parse_comm(path: &Path) -> ProcFsResult<Comm> {
             comm[..len].copy_from_slice(&content[..len]);
             Ok(comm)
         }
-        Err(err) => Err(ProcFsError::IOError(err)),
+        Err(err) => Err(ProcError::IOError(err)),
     }
 }
 
-pub fn parse_cmdline(path: &Path) -> ProcFsResult<String> {
+pub fn parse_cmdline(path: &Path) -> ProcResult<String> {
     match std::fs::read(&path) {
         Ok(content) => {
             let mut args = String::with_capacity(content.len());
@@ -28,6 +28,6 @@ pub fn parse_cmdline(path: &Path) -> ProcFsResult<String> {
             }
             Ok(args)
         }
-        Err(err) => Err(ProcFsError::IOError(err)),
+        Err(err) => Err(ProcError::IOError(err)),
     }
 }

@@ -1,9 +1,9 @@
-use crate::ProcFsResult;
+use crate::ProcResult;
 use crate::process::Process;
 use std::fs::read_dir;
 use std::path::Path;
 
-pub fn get_process_tasks(root: &Path, ppid: Option<i32>) -> ProcFsResult<Vec<Process>> {
+pub fn get_process_tasks(root: &Path, ppid: Option<i32>) -> ProcResult<Vec<Process>> {
     let mut processes = Vec::new();
 
     for entry in read_dir(&root)? {
