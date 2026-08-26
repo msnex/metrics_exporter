@@ -46,6 +46,7 @@ pub enum ItemKind {
 /// declare its items as a static array with zero runtime allocation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MetricItem {
+    pub item_type: u16,
     /// Fully-qualified metric name, e.g. `"process_cpu_seconds_total"`.
     pub name: &'static str,
     pub kind: ItemKind,
@@ -67,14 +68,14 @@ pub struct SampleGroup {
     /// Attributes shared by all values in this batch, pre-built as `KeyValue`
     /// (static keys and numbers allocate nothing; one owned `String` per
     /// entity at most).
-    pub attrs: SmallVec<[KeyValue; 2]>,
+    pub attrs: SmallVec<[KeyValue; 4]>,
     /// Inline capacity covers the typical per-entity item count, so values
     /// stay in the group's buffer without a separate heap allocation.
     pub values: SmallVec<[SampleValue; 16]>,
 }
 
 impl SampleGroup {
-    pub fn with_attrs(attrs: SmallVec<[KeyValue; 2]>) -> Self {
+    pub fn with_attrs(attrs: SmallVec<[KeyValue; 4]>) -> Self {
         Self {
             attrs,
             values: SmallVec::new(),
@@ -96,7 +97,7 @@ pub trait Collector: Send + Sync {
     fn interval(&self) -> Duration;
 
     /// Metric definitions, returned as a static slice.
-    fn items(&self) -> &'static [MetricItem];
+    fn items(&self) -> Vec<&MetricItem>;
 
     /// Perform one sampling pass, appending the produced groups to `out`.
     ///
@@ -294,6 +295,7 @@ mod tests {
     use std::sync::atomic::AtomicU64;
 
     static ITEMS: [MetricItem; 1] = [MetricItem {
+        item_type: 0,
         name: "fake_count",
         kind: ItemKind::CounterU64,
         unit: "{count}",
@@ -311,8 +313,8 @@ mod tests {
         fn interval(&self) -> Duration {
             self.interval
         }
-        fn items(&self) -> &'static [MetricItem] {
-            &ITEMS
+        fn items(&self) -> Vec<&MetricItem> {
+            ITEMS.iter().collect()
         }
         fn collect(&mut self, out: &mut Vec<SampleGroup>) {
             let mut group = SampleGroup::with_attrs(smallvec![KeyValue::new("pid", 42i64)]);
@@ -376,8 +378,8 @@ mod tests {
             fn interval(&self) -> Duration {
                 Duration::from_secs(1)
             }
-            fn items(&self) -> &'static [MetricItem] {
-                &[]
+            fn items(&self) -> Vec<&MetricItem> {
+                Vec::new()
             }
             fn collect(&mut self, _out: &mut Vec<SampleGroup>) {}
         }

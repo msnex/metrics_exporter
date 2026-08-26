@@ -4,7 +4,7 @@ use opentelemetry::metrics::{Meter, MeterProvider};
 use opentelemetry_otlp::{MetricExporter, WithExportConfig, WithHttpConfig, WithTonicConfig};
 use opentelemetry_sdk::{
     Resource,
-    metrics::{PeriodicReader, SdkMeterProvider},
+    metrics::{Instrument, PeriodicReader, SdkMeterProvider, Stream},
 };
 use std::collections::HashMap;
 use std::time::Duration;
@@ -60,6 +60,18 @@ impl MetricsExporter {
                     .with_service_name("metrics_exporter")
                     .build(),
             )
+            .with_view(|instrument: &Instrument| {
+                if instrument.name().starts_with("process_") {
+                    Some(
+                        Stream::builder()
+                            .with_cardinality_limit(1_000_000)
+                            .build()
+                            .expect("valid process metric stream"),
+                    )
+                } else {
+                    None
+                }
+            })
             .build();
 
         Ok(Self {

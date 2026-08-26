@@ -10,9 +10,6 @@ mod util;
 
 pub use io::Io;
 
-const COMM_MAX_LEN: usize = 16;
-pub type Comm = [u8; COMM_MAX_LEN];
-
 pub struct Process {
     pid: i32,
     root: PathBuf,
@@ -20,7 +17,8 @@ pub struct Process {
 
 impl Process {
     pub fn with_pid(pid: i32) -> Self {
-        let pid_str = lexical::to_string(pid);
+        let mut buf = core::fmt::NumBuffer::new();
+        let pid_str = pid.format_into(&mut buf);
         let root = Path::new(LINUX_PROC_PATH).join(pid_str);
         Self { pid, root }
     }
@@ -31,7 +29,7 @@ impl Process {
     }
 
     #[inline]
-    pub fn comm(&self) -> ProcResult<Comm> {
+    pub fn comm(&self) -> ProcResult<String> {
         let path = self.root.join("comm");
         util::parse_comm(&path)
     }

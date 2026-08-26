@@ -3,67 +3,107 @@
 //! Each sampling cycle enumerates the process table once and, for every
 //! process, reads each `/proc/<pid>/` file at most once: `comm` and `io`
 //! through the `procfs` atomic layer. All values of one process share a
-//! single `SampleGroup` (attributes `pid` + `comm`), so the `comm` string is
+//! single `SampleGroup` (attributes `hostname` + `pid` + `comm`), so the `comm` string is
 //! built exactly once per process per cycle.
 
+use crate::ProcessFilter;
 use metrics_framework::{Collector, ItemKind, MetricItem, Number, SampleGroup};
 use opentelemetry::KeyValue;
 use smallvec::smallvec;
-use std::collections::HashSet;
-use std::time::Duration;
-use tracing::debug;
+use std::{sync::Arc, time::Duration};
+
+#[allow(non_snake_case, non_upper_case_globals)]
+mod MetricItemType {
+    type Item = u16;
+    pub const Uptime: Item = 0;
+    pub const Process: Item = 1;
+}
 
 static ITEMS: &[MetricItem] = &[
     MetricItem {
-        name: "process_io_rchar_bytes_total",
-        kind: ItemKind::CounterU64,
-        unit: "By",
-        description: "Bytes read from storage by the process (rchar).",
+        item_type: MetricItemType::Uptime,
+        name: "uptime",
+        kind: ItemKind::GaugeF64,
+        unit: "s",
+        description: "System uptime",
     },
     MetricItem {
-        name: "process_io_wchar_bytes_total",
+        item_type: MetricItemType::Process,
+        name: "process_io_rchar_total",
         kind: ItemKind::CounterU64,
         unit: "By",
-        description: "Bytes written to storage by the process (wchar).",
+        description: "Number of bytes the process has read (rchar)",
     },
     MetricItem {
+        item_type: MetricItemType::Process,
+        name: "process_io_wchar_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Number of bytes the process has written (wchar)",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
         name: "process_io_read_bytes_total",
         kind: ItemKind::CounterU64,
         unit: "By",
-        description: "Bytes actually read from disk by the process.",
+        description: "Bytes of read(2) I/O for the process",
     },
     MetricItem {
+        item_type: MetricItemType::Process,
         name: "process_io_write_bytes_total",
         kind: ItemKind::CounterU64,
         unit: "By",
-        description: "Bytes actually written to disk by the process.",
+        description: "Bytes of write(2) I/O for the process",
     },
     MetricItem {
+        item_type: MetricItemType::Process,
+        name: "process_io_cancelled_write_bytes_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Bytes of cancelled write(2) I/O for the process",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
         name: "process_io_syscr_total",
         kind: ItemKind::CounterU64,
         unit: "{operations}",
-        description: "Read syscalls issued by the process.",
+        description: "Number of read(2) syscalls for the process",
     },
     MetricItem {
+        item_type: MetricItemType::Process,
         name: "process_io_syscw_total",
         kind: ItemKind::CounterU64,
         unit: "{operations}",
-        description: "Write syscalls issued by the process.",
+        description: "Number of write(2) syscalls for the process",
     },
 ];
 
-#[derive(Default)]
-pub struct ProcessFilter {
-    pub include_comms: HashSet<String>,
+#[derive(Clone, bon::Builder)]
+pub struct HostCollectorCfg {
+    #[builder(default = Duration::from_secs(1))]
+    interval: Duration,
+    #[builder(default = false)]
+    process: bool,
+    #[builder(default)]
+    process_filter: ProcessFilter,
 }
 
 pub struct HostCollector {
-    interval: Duration,
+    cfg: HostCollectorCfg,
+    hostname: KeyValue,
 }
 
 impl HostCollector {
-    pub fn new(interval: Duration) -> Self {
-        Self { interval }
+    pub fn new(cfg: HostCollectorCfg) -> Self {
+        let hostname: Arc<str> = hostname::get()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .into_owned()
+            .into();
+        Self {
+            cfg,
+            hostname: KeyValue::new("hostname", hostname),
+        }
     }
 }
 
@@ -73,92 +113,34 @@ impl Collector for HostCollector {
     }
 
     fn interval(&self) -> Duration {
-        self.interval
+        self.cfg.interval
     }
 
-    fn items(&self) -> &'static [MetricItem] {
-        ITEMS
+    fn items(&self) -> Vec<&MetricItem> {
+        let mut items = Vec::new();
+
+        for item in ITEMS.as_ref() {
+            if self.cfg.process && item.item_type == MetricItemType::Process {
+                items.push(item);
+            }
+            match item.item_type {
+                MetricItemType::Uptime => items.push(item),
+                _ => {}
+            }
+        }
+        items
     }
 
     fn collect(&mut self, out: &mut Vec<SampleGroup>) {
-        let Ok(processes) = procfs::process::get_all_processes() else {
-            return;
-        };
-
-        for process in processes {
-            // comm is the gate: if it cannot be read the process is gone.
-            let Ok(comm) = process.comm() else {
-                continue;
-            };
-            let comm = comm_to_string(&comm);
-
-            let mut group = SampleGroup::with_attrs(smallvec![
-                KeyValue::new("pid", process.pid() as i64),
-                KeyValue::new("comm", comm),
-            ]);
-
-            match process.io() {
-                Ok(io) => {
-                    group.push("process_io_rchar_bytes_total", Number::U64(io.rchar));
-                    group.push("process_io_wchar_bytes_total", Number::U64(io.wchar));
-                    group.push("process_io_syscr_total", Number::U64(io.syscr));
-                    group.push("process_io_syscw_total", Number::U64(io.syscw));
-                    group.push("process_io_read_bytes_total", Number::U64(io.read_bytes));
-                    group.push("process_io_write_bytes_total", Number::U64(io.write_bytes));
-                    out.push(group);
-                }
-                Err(err) => {
-                    debug!("read io for pid {} failed: {}", process.pid(), err);
-                }
-            }
+        // uptime
+        if let Ok(uptime) = procfs::uptime::uptime() {
+            let mut group = SampleGroup::with_attrs(smallvec![self.hostname.clone()]);
+            group.push("uptime", Number::F64(uptime.uptime));
+            out.push(group);
         }
-    }
-}
 
-/// Convert a fixed-size `comm` (NUL/newline padded) into an owned `String`.
-fn comm_to_string(comm: &[u8; 16]) -> String {
-    let end = comm
-        .iter()
-        .position(|&b| b == 0 || b == b'\n')
-        .unwrap_or(comm.len());
-    String::from_utf8_lossy(&comm[..end]).into_owned()
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use opentelemetry::Value;
-
-    #[test]
-    fn comm_trims_padding() {
-        assert_eq!(
-            comm_to_string(b"bash\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
-            "bash"
-        );
-        assert_eq!(
-            comm_to_string(b"bash\n\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
-            "bash"
-        );
-        assert_eq!(comm_to_string(b"1234567890123456"), "1234567890123456");
-    }
-
-    #[test]
-    fn process_collect_contains_self_io() {
-        let mut collector = HostCollector::new(Duration::from_secs(1));
-        let mut out = Vec::new();
-        collector.collect(&mut out);
-
-        let pid = std::process::id() as i64;
-        assert!(
-            out.iter().any(|g| g.attrs.iter().any(|kv| {
-                kv.key.as_str() == "pid" && matches!(&kv.value, Value::I64(v) if *v == pid)
-            })),
-            "own pid {pid} missing from process sample"
-        );
-        assert!(
-            out.iter()
-                .flat_map(|g| g.values.iter())
-                .any(|v| v.name == "process_io_rchar_bytes_total")
-        );
+        if self.cfg.process {
+            super::process::collect_process_metrics(&self.hostname, &self.cfg.process_filter, out);
+        }
     }
 }

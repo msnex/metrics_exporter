@@ -14,8 +14,8 @@ interval_secs = 1
 
 [metrics.host.process]
 enable = true
-include_comms = ["NTA-Main"]
-child = true
+# comms = []
+thread = true
 
 [log]
 # valid values: stdout, file

@@ -56,9 +56,9 @@ pub struct LogCfg {
 #[derive(Debug, Clone, Deserialize)]
 pub struct MetricsHostProcessCfg {
     pub enable: bool,
-    pub child: bool,
+    pub thread: bool,
     #[serde(default)]
-    pub include_comms: Vec<String>,
+    pub comms: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

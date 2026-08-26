@@ -9,6 +9,8 @@
 //! are limited to one owned `String` (comm) per process.
 
 mod host;
+mod process;
 
 pub use host::HostCollector;
-pub use host::ProcessFilter;
+pub use host::HostCollectorCfg;
+pub use process::ProcessFilter;
