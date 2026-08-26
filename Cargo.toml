@@ -3,9 +3,12 @@ resolver = "3"
 members = ["crates/*"]
 
 [workspace.dependencies]
+bon = "3.10.0"
+hostname = "0.4.2"
 lexical = "7.0.5"
 opentelemetry = { version = "0.32.0", features = ["metrics"] }
 parking_lot = "0.12.5"
+regex = "1.13.1"
 serde = "1.0.229"
 smallvec = "1.15"
 thiserror = "2.0.20"
@@ -35,6 +38,7 @@ opentelemetry-otlp = { version = "0.32.0", features = [
 ] }
 parking_lot = { workspace = true }
 procfs = { path = "./crates/procfs" }
+regex = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 time = { workspace = true, features = ["macros"] }
 tokio = { version = "1.53.1", features = ["rt-multi-thread"] }

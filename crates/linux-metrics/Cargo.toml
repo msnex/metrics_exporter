@@ -5,9 +5,12 @@ edition = "2024"
 description = "Linux system and per-process metric collectors built on top of procfs"
 
 [dependencies]
+bon = { workspace = true }
+hostname = { workspace = true }
 lexical = { workspace = true }
 metrics-framework = { path = "../metrics-framework" }
 opentelemetry = { workspace = true }
 procfs = { path = "../procfs" }
+regex = { workspace = true }
 smallvec = { workspace = true }
 tracing = { workspace = true }

@@ -19,10 +19,10 @@ pub fn get_process_tasks(root: &Path, ppid: Option<i32>) -> ProcResult<Vec<Proce
         let dir_name = dir_entry.file_name();
 
         if let Ok(pid) = dir_name.to_string_lossy().parse::<i32>() {
-            if let Some(id) = ppid {
-                if pid == id {
-                    continue;
-                }
+            if let Some(id) = ppid
+                && id == pid
+            {
+                continue;
             }
             processes.push(Process::with_pid(pid));
         }

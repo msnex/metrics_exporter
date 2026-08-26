@@ -1,15 +1,12 @@
 use crate::ProcResult;
 use crate::error::ProcError;
-use crate::process::Comm;
 use std::path::Path;
 
-pub fn parse_comm(path: &Path) -> ProcResult<Comm> {
+pub fn parse_comm(path: &Path) -> ProcResult<String> {
     match std::fs::read(&path) {
         Ok(content) => {
-            let mut comm = Comm::default();
             let content = content.strip_suffix(b"\n").unwrap_or(&content);
-            let len = content.len().min(comm.len());
-            comm[..len].copy_from_slice(&content[..len]);
+            let comm = String::from_utf8_lossy(&content).into_owned();
             Ok(comm)
         }
         Err(err) => Err(ProcError::IOError(err)),
