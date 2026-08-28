@@ -17,6 +17,10 @@ enable = true
 # comms = []
 thread = true
 
+[metrics.host.net]
+enable = true
+# ifaces = []
+
 [log]
 # valid values: stdout, file
 writer = "stdout"

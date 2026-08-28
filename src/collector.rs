@@ -1,9 +1,10 @@
-use crate::config::{MetricsCfg, MetricsHostCfg, MetricsHostProcessCfg};
+use crate::config::{MetricsCfg, MetricsHostCfg, MetricsHostNetCfg, MetricsHostProcessCfg};
 use anyhow::Result;
-use linux_metrics::{HostCollector, HostCollectorCfg, ProcessFilter};
+use linux_metrics::{HostCollector, HostCollectorCfg, NetFilter, ProcessFilter};
 use metrics_framework::{Collector, Registry};
 use opentelemetry::metrics::Meter;
 use regex::RegexSet;
+use std::collections::HashSet;
 use std::time::Duration;
 use tracing::info;
 
@@ -33,10 +34,32 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
         .maybe_comms_regex(comms_regex_set)
         .build();
 
+    let MetricsHostNetCfg {
+        enable: net_enable,
+        ifaces,
+    } = if let Some(net_cfg) = cfg.net.as_ref() {
+        net_cfg
+    } else {
+        &MetricsHostNetCfg {
+            enable: false,
+            ifaces: Vec::new(),
+        }
+    };
+
+    let iface_set = if ifaces.is_empty() {
+        None
+    } else {
+        Some(ifaces.iter().cloned().collect::<HashSet<_>>())
+    };
+
+    let net_filter = NetFilter::builder().maybe_ifaces(iface_set).build();
+
     let collector_cfg = HostCollectorCfg::builder()
         .interval(Duration::from_secs(cfg.interval_secs))
         .process(*enable)
         .process_filter(process_filter)
+        .net(*net_enable)
+        .net_filter(net_filter)
         .build();
 
     Ok(HostCollector::new(collector_cfg))
