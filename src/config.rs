@@ -62,11 +62,19 @@ pub struct MetricsHostProcessCfg {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct MetricsHostNetCfg {
+    pub enable: bool,
+    #[serde(default)]
+    pub ifaces: Vec<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct MetricsHostCfg {
     pub enable: bool,
     #[serde(default = "default_interval_secs")]
     pub interval_secs: u64,
     pub process: Option<MetricsHostProcessCfg>,
+    pub net: Option<MetricsHostNetCfg>,
 }
 
 fn default_interval_secs() -> u64 {

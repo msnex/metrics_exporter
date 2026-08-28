@@ -6,7 +6,7 @@
 //! single `SampleGroup` (attributes `hostname` + `pid` + `comm`), so the `comm` string is
 //! built exactly once per process per cycle.
 
-use crate::ProcessFilter;
+use crate::{NetFilter, ProcessFilter};
 use metrics_framework::{Collector, ItemKind, MetricItem, Number, SampleGroup};
 use opentelemetry::KeyValue;
 use smallvec::smallvec;
@@ -17,6 +17,7 @@ mod MetricItemType {
     type Item = u16;
     pub const Uptime: Item = 0;
     pub const Process: Item = 1;
+    pub const Net: Item = 2;
 }
 
 static ITEMS: &[MetricItem] = &[
@@ -76,6 +77,62 @@ static ITEMS: &[MetricItem] = &[
         unit: "{operations}",
         description: "Number of write(2) syscalls for the process",
     },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_rx_bytes_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Number of bytes received by the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_rx_packets_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of packets received by the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_rx_errs_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of receive errors on the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_rx_drop_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of received packets dropped by the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_tx_bytes_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Number of bytes transmitted by the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_tx_packets_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of packets transmitted by the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_tx_errs_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of transmit errors on the network interface",
+    },
+    MetricItem {
+        item_type: MetricItemType::Net,
+        name: "iface_tx_drop_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of transmitted packets dropped by the network interface",
+    },
 ];
 
 #[derive(Clone, bon::Builder)]
@@ -86,6 +143,10 @@ pub struct HostCollectorCfg {
     process: bool,
     #[builder(default)]
     process_filter: ProcessFilter,
+    #[builder(default = false)]
+    net: bool,
+    #[builder(default)]
+    net_filter: NetFilter,
 }
 
 pub struct HostCollector {
@@ -120,11 +181,10 @@ impl Collector for HostCollector {
         let mut items = Vec::new();
 
         for item in ITEMS.as_ref() {
-            if self.cfg.process && item.item_type == MetricItemType::Process {
-                items.push(item);
-            }
             match item.item_type {
                 MetricItemType::Uptime => items.push(item),
+                MetricItemType::Process if self.cfg.process => items.push(item),
+                MetricItemType::Net if self.cfg.net => items.push(item),
                 _ => {}
             }
         }
@@ -142,5 +202,41 @@ impl Collector for HostCollector {
         if self.cfg.process {
             super::process::collect_process_metrics(&self.hostname, &self.cfg.process_filter, out);
         }
+
+        if self.cfg.net {
+            super::net::collect_net_metrics(&self.hostname, &self.cfg.net_filter, out);
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn net_collect_contains_loopback() {
+        let cfg = HostCollectorCfg::builder()
+            .interval(Duration::from_secs(1))
+            .net(true)
+            .build();
+        let mut collector = HostCollector::new(cfg);
+        let mut out = Vec::new();
+        collector.collect(&mut out);
+
+        assert!(
+            out.iter().any(|group| {
+                group
+                    .attrs
+                    .iter()
+                    .any(|kv| kv.key.as_str() == "device" && kv.value.as_str() == "lo")
+            }),
+            "loopback device missing from net sample"
+        );
+        assert!(
+            out.iter()
+                .flat_map(|group| group.values.iter())
+                .any(|value| value.name == "iface_rx_bytes_total"),
+            "iface_rx_bytes_total missing from net sample"
+        );
     }
 }
