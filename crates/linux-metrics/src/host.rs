@@ -20,6 +20,7 @@ mod MetricItemType {
     pub const Loadavg: Item = 1;
     pub const Process: Item = 2;
     pub const Net: Item = 3;
+    pub const Cpu: Item = 4;
 }
 
 static ITEMS: &[MetricItem] = &[
@@ -64,6 +65,13 @@ static ITEMS: &[MetricItem] = &[
         kind: ItemKind::GaugeU64,
         unit: "{tasks}",
         description: "Total number of tasks",
+    },
+    MetricItem {
+        item_type: MetricItemType::Cpu,
+        name: "cpu_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Seconds the CPUs spent in each mode",
     },
     MetricItem {
         item_type: MetricItemType::Process,
@@ -184,6 +192,10 @@ pub struct HostCollectorCfg {
     net: bool,
     #[builder(default)]
     net_filter: NetFilter,
+    #[builder(default = false)]
+    cpu: bool,
+    #[builder(default = false)]
+    per_core: bool,
 }
 
 pub struct HostCollector {
@@ -221,6 +233,7 @@ impl Collector for HostCollector {
             match item.item_type {
                 MetricItemType::Uptime => items.push(item),
                 MetricItemType::Loadavg => items.push(item),
+                MetricItemType::Cpu if self.cfg.cpu => items.push(item),
                 MetricItemType::Process if self.cfg.process => items.push(item),
                 MetricItemType::Net if self.cfg.net => items.push(item),
                 _ => {}
@@ -240,6 +253,10 @@ impl Collector for HostCollector {
         // loadavg
         if let Ok(loadavg) = procfs::loadavg::loadavg() {
             collect_loadavg_metrics(&self.hostname, &loadavg, out);
+        }
+
+        if self.cfg.cpu {
+            super::cpu::collect_cpu_metrics(&self.hostname, self.cfg.per_core, out);
         }
 
         if self.cfg.process {
@@ -346,6 +363,33 @@ mod tests {
                 .flat_map(|group| group.values.iter())
                 .any(|value| value.name == "loadavg_1m"),
             "loadavg_1m missing from host sample"
+        );
+    }
+
+    #[test]
+    fn host_collect_contains_cpu() {
+        let cfg = HostCollectorCfg::builder()
+            .interval(Duration::from_secs(1))
+            .cpu(true)
+            .build();
+        let mut collector = HostCollector::new(cfg);
+        let mut out = Vec::new();
+        collector.collect(&mut out);
+
+        assert!(
+            out.iter().any(|group| {
+                group
+                    .attrs
+                    .iter()
+                    .any(|kv| kv.key.as_str() == "cpu" && kv.value.as_str() == "cpu")
+            }),
+            "aggregate cpu group missing from host sample"
+        );
+        assert!(
+            out.iter()
+                .flat_map(|group| group.values.iter())
+                .any(|value| value.name == "cpu_seconds_total"),
+            "cpu_seconds_total missing from host sample"
         );
     }
 }

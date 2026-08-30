@@ -21,6 +21,10 @@ thread = true
 enable = true
 # ifaces = []
 
+[metrics.host.cpu]
+enable = true
+per_core = true
+
 [log]
 # valid values: stdout, file
 writer = "stdout"

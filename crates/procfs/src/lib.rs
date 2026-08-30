@@ -1,3 +1,4 @@
+pub mod cpu;
 pub mod error;
 pub mod loadavg;
 pub mod net;

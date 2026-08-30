@@ -1,4 +1,6 @@
-use crate::config::{MetricsCfg, MetricsHostCfg, MetricsHostNetCfg, MetricsHostProcessCfg};
+use crate::config::{
+    MetricsCfg, MetricsHostCfg, MetricsHostCpuCfg, MetricsHostNetCfg, MetricsHostProcessCfg,
+};
 use anyhow::Result;
 use linux_metrics::{HostCollector, HostCollectorCfg, NetFilter, ProcessFilter};
 use metrics_framework::{Collector, Registry};
@@ -54,12 +56,26 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
 
     let net_filter = NetFilter::builder().maybe_ifaces(iface_set).build();
 
+    let MetricsHostCpuCfg {
+        enable: cpu_enable,
+        per_core,
+    } = if let Some(cpu_cfg) = cfg.cpu.as_ref() {
+        cpu_cfg
+    } else {
+        &MetricsHostCpuCfg {
+            enable: false,
+            per_core: false,
+        }
+    };
+
     let collector_cfg = HostCollectorCfg::builder()
         .interval(Duration::from_secs(cfg.interval_secs))
         .process(*enable)
         .process_filter(process_filter)
         .net(*net_enable)
         .net_filter(net_filter)
+        .cpu(*cpu_enable)
+        .per_core(*per_core)
         .build();
 
     Ok(HostCollector::new(collector_cfg))

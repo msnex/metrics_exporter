@@ -69,10 +69,18 @@ pub struct MetricsHostNetCfg {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct MetricsHostCpuCfg {
+    pub enable: bool,
+    #[serde(default)]
+    pub per_core: bool,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct MetricsHostCfg {
     pub enable: bool,
     #[serde(default = "default_interval_secs")]
     pub interval_secs: u64,
+    pub cpu: Option<MetricsHostCpuCfg>,
     pub process: Option<MetricsHostProcessCfg>,
     pub net: Option<MetricsHostNetCfg>,
 }
