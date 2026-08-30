@@ -1,4 +1,5 @@
 pub mod cpu;
+pub mod diskstats;
 pub mod error;
 pub mod loadavg;
 pub mod net;

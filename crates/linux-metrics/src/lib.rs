@@ -10,10 +10,12 @@
 //! per process.
 
 mod cpu;
+mod disk;
 mod host;
 mod net;
 mod process;
 
+pub use disk::DiskFilter;
 pub use host::HostCollector;
 pub use host::HostCollectorCfg;
 pub use net::NetFilter;

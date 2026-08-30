@@ -76,11 +76,20 @@ pub struct MetricsHostCpuCfg {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct MetricsHostDiskCfg {
+    pub enable: bool,
+    /// Explicit device allow-list; empty means whole disks only.
+    #[serde(default)]
+    pub devices: Vec<String>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct MetricsHostCfg {
     pub enable: bool,
     #[serde(default = "default_interval_secs")]
     pub interval_secs: u64,
     pub cpu: Option<MetricsHostCpuCfg>,
+    pub disk: Option<MetricsHostDiskCfg>,
     pub process: Option<MetricsHostProcessCfg>,
     pub net: Option<MetricsHostNetCfg>,
 }

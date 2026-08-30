@@ -15,7 +15,7 @@ interval_secs = 1
 [metrics.host.process]
 enable = true
 # comms = []
-thread = true
+thread = false
 
 [metrics.host.net]
 enable = true
@@ -23,7 +23,11 @@ enable = true
 
 [metrics.host.cpu]
 enable = true
-per_core = true
+per_core = false
+
+[metrics.host.disk]
+enable = true
+# devices = []
 
 [log]
 # valid values: stdout, file

@@ -6,7 +6,7 @@
 //! single `SampleGroup` (attributes `hostname` + `pid` + `comm`), so the `comm` string is
 //! built exactly once per process per cycle.
 
-use crate::{NetFilter, ProcessFilter};
+use crate::{DiskFilter, NetFilter, ProcessFilter};
 use metrics_framework::{Collector, ItemKind, MetricItem, Number, SampleGroup};
 use opentelemetry::KeyValue;
 use procfs::loadavg::LoadAvg;
@@ -21,6 +21,7 @@ mod MetricItemType {
     pub const Process: Item = 2;
     pub const Net: Item = 3;
     pub const Cpu: Item = 4;
+    pub const Disk: Item = 5;
 }
 
 static ITEMS: &[MetricItem] = &[
@@ -178,6 +179,125 @@ static ITEMS: &[MetricItem] = &[
         unit: "{count}",
         description: "Number of transmitted packets dropped by the network interface",
     },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_read_bytes_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Number of bytes read from the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_reads_completed_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of reads completed successfully by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_reads_merged_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of reads merged by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_read_time_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Time spent reading from the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_write_bytes_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Number of bytes written to the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_writes_completed_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of writes completed successfully by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_writes_merged_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of writes merged by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_write_time_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Time spent writing to the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_io_now",
+        kind: ItemKind::GaugeU64,
+        unit: "{operations}",
+        description: "Number of I/Os currently in progress on the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_io_time_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Time spent doing I/Os on the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_io_time_weighted_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Weighted time spent doing I/Os on the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_discard_bytes_total",
+        kind: ItemKind::CounterU64,
+        unit: "By",
+        description: "Number of bytes discarded from the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_discards_completed_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of discards completed successfully by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_discards_merged_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of discards merged by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_discard_time_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Time spent discarding on the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_flush_requests_total",
+        kind: ItemKind::CounterU64,
+        unit: "{count}",
+        description: "Number of flush requests completed successfully by the block device",
+    },
+    MetricItem {
+        item_type: MetricItemType::Disk,
+        name: "disk_flush_time_seconds_total",
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "Time spent flushing the block device",
+    },
 ];
 
 #[derive(Clone, bon::Builder)]
@@ -196,6 +316,10 @@ pub struct HostCollectorCfg {
     cpu: bool,
     #[builder(default = false)]
     per_core: bool,
+    #[builder(default = false)]
+    disk: bool,
+    #[builder(default)]
+    disk_filter: DiskFilter,
 }
 
 pub struct HostCollector {
@@ -236,6 +360,7 @@ impl Collector for HostCollector {
                 MetricItemType::Cpu if self.cfg.cpu => items.push(item),
                 MetricItemType::Process if self.cfg.process => items.push(item),
                 MetricItemType::Net if self.cfg.net => items.push(item),
+                MetricItemType::Disk if self.cfg.disk => items.push(item),
                 _ => {}
             }
         }
@@ -265,6 +390,10 @@ impl Collector for HostCollector {
 
         if self.cfg.net {
             super::net::collect_net_metrics(&self.hostname, &self.cfg.net_filter, out);
+        }
+
+        if self.cfg.disk {
+            super::disk::collect_disk_metrics(&self.hostname, &self.cfg.disk_filter, out);
         }
     }
 }
@@ -390,6 +519,29 @@ mod tests {
                 .flat_map(|group| group.values.iter())
                 .any(|value| value.name == "cpu_seconds_total"),
             "cpu_seconds_total missing from host sample"
+        );
+    }
+
+    #[test]
+    fn host_collect_contains_disk() {
+        let cfg = HostCollectorCfg::builder()
+            .interval(Duration::from_secs(1))
+            .disk(true)
+            .build();
+        let mut collector = HostCollector::new(cfg);
+        let mut out = Vec::new();
+        collector.collect(&mut out);
+
+        assert!(
+            out.iter()
+                .any(|group| { group.attrs.iter().any(|kv| kv.key.as_str() == "device") }),
+            "whole-disk group missing from host sample"
+        );
+        assert!(
+            out.iter()
+                .flat_map(|group| group.values.iter())
+                .any(|value| value.name == "disk_read_bytes_total"),
+            "disk_read_bytes_total missing from host sample"
         );
     }
 }

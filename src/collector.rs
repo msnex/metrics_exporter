@@ -1,8 +1,9 @@
 use crate::config::{
-    MetricsCfg, MetricsHostCfg, MetricsHostCpuCfg, MetricsHostNetCfg, MetricsHostProcessCfg,
+    MetricsCfg, MetricsHostCfg, MetricsHostCpuCfg, MetricsHostDiskCfg, MetricsHostNetCfg,
+    MetricsHostProcessCfg,
 };
 use anyhow::Result;
-use linux_metrics::{HostCollector, HostCollectorCfg, NetFilter, ProcessFilter};
+use linux_metrics::{DiskFilter, HostCollector, HostCollectorCfg, NetFilter, ProcessFilter};
 use metrics_framework::{Collector, Registry};
 use opentelemetry::metrics::Meter;
 use regex::RegexSet;
@@ -68,6 +69,25 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
         }
     };
 
+    let MetricsHostDiskCfg {
+        enable: disk_enable,
+        devices: disk_devices,
+    } = if let Some(disk_cfg) = cfg.disk.as_ref() {
+        disk_cfg
+    } else {
+        &MetricsHostDiskCfg {
+            enable: false,
+            devices: Vec::new(),
+        }
+    };
+
+    let disk_set = if disk_devices.is_empty() {
+        None
+    } else {
+        Some(disk_devices.iter().cloned().collect::<HashSet<_>>())
+    };
+    let disk_filter = DiskFilter::builder().maybe_disks(disk_set).build();
+
     let collector_cfg = HostCollectorCfg::builder()
         .interval(Duration::from_secs(cfg.interval_secs))
         .process(*enable)
@@ -76,6 +96,8 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
         .net_filter(net_filter)
         .cpu(*cpu_enable)
         .per_core(*per_core)
+        .disk(*disk_enable)
+        .disk_filter(disk_filter)
         .build();
 
     Ok(HostCollector::new(collector_cfg))
