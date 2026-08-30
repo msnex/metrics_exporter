@@ -1,5 +1,7 @@
 pub mod error;
+pub mod loadavg;
 pub mod net;
+mod parse;
 pub mod process;
 mod traits;
 pub mod uptime;

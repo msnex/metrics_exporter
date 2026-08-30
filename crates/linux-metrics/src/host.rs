@@ -9,6 +9,7 @@
 use crate::{NetFilter, ProcessFilter};
 use metrics_framework::{Collector, ItemKind, MetricItem, Number, SampleGroup};
 use opentelemetry::KeyValue;
+use procfs::loadavg::LoadAvg;
 use smallvec::smallvec;
 use std::{sync::Arc, time::Duration};
 
@@ -16,8 +17,9 @@ use std::{sync::Arc, time::Duration};
 mod MetricItemType {
     type Item = u16;
     pub const Uptime: Item = 0;
-    pub const Process: Item = 1;
-    pub const Net: Item = 2;
+    pub const Loadavg: Item = 1;
+    pub const Process: Item = 2;
+    pub const Net: Item = 3;
 }
 
 static ITEMS: &[MetricItem] = &[
@@ -27,6 +29,41 @@ static ITEMS: &[MetricItem] = &[
         kind: ItemKind::GaugeF64,
         unit: "s",
         description: "System uptime",
+    },
+    MetricItem {
+        item_type: MetricItemType::Loadavg,
+        name: "loadavg_1m",
+        kind: ItemKind::GaugeF64,
+        unit: "",
+        description: "1m load average",
+    },
+    MetricItem {
+        item_type: MetricItemType::Loadavg,
+        name: "loadavg_5m",
+        kind: ItemKind::GaugeF64,
+        unit: "",
+        description: "5m load average",
+    },
+    MetricItem {
+        item_type: MetricItemType::Loadavg,
+        name: "loadavg_15m",
+        kind: ItemKind::GaugeF64,
+        unit: "",
+        description: "15m load average",
+    },
+    MetricItem {
+        item_type: MetricItemType::Loadavg,
+        name: "loadavg_running_tasks",
+        kind: ItemKind::GaugeU64,
+        unit: "{tasks}",
+        description: "Number of currently running tasks",
+    },
+    MetricItem {
+        item_type: MetricItemType::Loadavg,
+        name: "loadavg_total_tasks",
+        kind: ItemKind::GaugeU64,
+        unit: "{tasks}",
+        description: "Total number of tasks",
     },
     MetricItem {
         item_type: MetricItemType::Process,
@@ -183,6 +220,7 @@ impl Collector for HostCollector {
         for item in ITEMS.as_ref() {
             match item.item_type {
                 MetricItemType::Uptime => items.push(item),
+                MetricItemType::Loadavg => items.push(item),
                 MetricItemType::Process if self.cfg.process => items.push(item),
                 MetricItemType::Net if self.cfg.net => items.push(item),
                 _ => {}
@@ -199,6 +237,11 @@ impl Collector for HostCollector {
             out.push(group);
         }
 
+        // loadavg
+        if let Ok(loadavg) = procfs::loadavg::loadavg() {
+            collect_loadavg_metrics(&self.hostname, &loadavg, out);
+        }
+
         if self.cfg.process {
             super::process::collect_process_metrics(&self.hostname, &self.cfg.process_filter, out);
         }
@@ -209,9 +252,29 @@ impl Collector for HostCollector {
     }
 }
 
+/// Append one host-level sample group for a `/proc/loadavg` snapshot.
+fn collect_loadavg_metrics(hostname: &KeyValue, loadavg: &LoadAvg, out: &mut Vec<SampleGroup>) {
+    let mut group = SampleGroup::with_attrs(smallvec![hostname.clone()]);
+    group.push("loadavg_1m", Number::F64(loadavg.load1));
+    group.push("loadavg_5m", Number::F64(loadavg.load5));
+    group.push("loadavg_15m", Number::F64(loadavg.load15));
+    group.push("loadavg_running_tasks", Number::U64(loadavg.running as u64));
+    group.push("loadavg_total_tasks", Number::U64(loadavg.total as u64));
+    out.push(group);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn value(group: &SampleGroup, name: &str) -> Number {
+        group
+            .values
+            .iter()
+            .find(|value| value.name == name)
+            .map(|value| value.value)
+            .expect("metric value missing")
+    }
 
     #[test]
     fn net_collect_contains_loopback() {
@@ -228,7 +291,7 @@ mod tests {
                 group
                     .attrs
                     .iter()
-                    .any(|kv| kv.key.as_str() == "device" && kv.value.as_str() == "lo")
+                    .any(|kv| kv.key.as_str() == "iface" && kv.value.as_str() == "lo")
             }),
             "loopback device missing from net sample"
         );
@@ -237,6 +300,52 @@ mod tests {
                 .flat_map(|group| group.values.iter())
                 .any(|value| value.name == "iface_rx_bytes_total"),
             "iface_rx_bytes_total missing from net sample"
+        );
+    }
+
+    #[test]
+    fn collect_loadavg_metrics_emits_all_fields() {
+        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let loadavg = LoadAvg {
+            load1: 0.25,
+            load5: 0.5,
+            load15: 0.75,
+            running: 2,
+            total: 100,
+            last_pid: 42,
+        };
+        let mut out = Vec::new();
+        collect_loadavg_metrics(&hostname, &loadavg, &mut out);
+
+        assert_eq!(out.len(), 1);
+        let group = &out[0];
+        assert!(
+            group
+                .attrs
+                .iter()
+                .any(|kv| { kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host" })
+        );
+        assert_eq!(value(group, "loadavg_1m"), Number::F64(0.25));
+        assert_eq!(value(group, "loadavg_5m"), Number::F64(0.5));
+        assert_eq!(value(group, "loadavg_15m"), Number::F64(0.75));
+        assert_eq!(value(group, "loadavg_running_tasks"), Number::U64(2));
+        assert_eq!(value(group, "loadavg_total_tasks"), Number::U64(100));
+    }
+
+    #[test]
+    fn host_collect_contains_loadavg() {
+        let cfg = HostCollectorCfg::builder()
+            .interval(Duration::from_secs(1))
+            .build();
+        let mut collector = HostCollector::new(cfg);
+        let mut out = Vec::new();
+        collector.collect(&mut out);
+
+        assert!(
+            out.iter()
+                .flat_map(|group| group.values.iter())
+                .any(|value| value.name == "loadavg_1m"),
+            "loadavg_1m missing from host sample"
         );
     }
 }

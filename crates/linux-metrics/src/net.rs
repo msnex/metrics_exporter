@@ -104,7 +104,7 @@ mod tests {
                 group
                     .attrs
                     .iter()
-                    .any(|kv| kv.key.as_str() == "device" && kv.value.as_str() == "lo")
+                    .any(|kv| kv.key.as_str() == "iface" && kv.value.as_str() == "lo")
             })
             .expect("lo group missing");
 
@@ -138,7 +138,7 @@ mod tests {
             out[0]
                 .attrs
                 .iter()
-                .any(|kv| { kv.key.as_str() == "device" && kv.value.as_str() == "eth0" })
+                .any(|kv| { kv.key.as_str() == "iface" && kv.value.as_str() == "eth0" })
         );
     }
 }

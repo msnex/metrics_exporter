@@ -1,3 +1,4 @@
+use crate::parse::parse_u64;
 use crate::traits::FileRead;
 use crate::{LINUX_PROC_PATH, ProcResult};
 use std::path::Path;
@@ -68,52 +69,52 @@ impl DevStats {
                 .split(|b| b.is_ascii_whitespace())
                 .filter(|token| !token.is_empty());
 
-            let Some(rx_bytes) = parse_u64(&mut tokens) else {
+            let Ok(rx_bytes) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_packets) = parse_u64(&mut tokens) else {
+            let Ok(rx_packets) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_errs) = parse_u64(&mut tokens) else {
+            let Ok(rx_errs) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_drop) = parse_u64(&mut tokens) else {
+            let Ok(rx_drop) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_fifo) = parse_u64(&mut tokens) else {
+            let Ok(rx_fifo) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_frame) = parse_u64(&mut tokens) else {
+            let Ok(rx_frame) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_compressed) = parse_u64(&mut tokens) else {
+            let Ok(rx_compressed) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(rx_multicast) = parse_u64(&mut tokens) else {
+            let Ok(rx_multicast) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_bytes) = parse_u64(&mut tokens) else {
+            let Ok(tx_bytes) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_packets) = parse_u64(&mut tokens) else {
+            let Ok(tx_packets) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_errs) = parse_u64(&mut tokens) else {
+            let Ok(tx_errs) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_drop) = parse_u64(&mut tokens) else {
+            let Ok(tx_drop) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_fifo) = parse_u64(&mut tokens) else {
+            let Ok(tx_fifo) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_colls) = parse_u64(&mut tokens) else {
+            let Ok(tx_colls) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_carrier) = parse_u64(&mut tokens) else {
+            let Ok(tx_carrier) = parse_u64(tokens.next()) else {
                 continue;
             };
-            let Some(tx_compressed) = parse_u64(&mut tokens) else {
+            let Ok(tx_compressed) = parse_u64(tokens.next()) else {
                 continue;
             };
 
@@ -146,11 +147,6 @@ impl DevStats {
 pub fn dev_stats() -> ProcResult<DevStats> {
     let path = Path::new(LINUX_PROC_PATH).join("net").join("dev");
     DevStats::from_file(path)
-}
-
-fn parse_u64<'a>(tokens: &mut impl Iterator<Item = &'a [u8]>) -> Option<u64> {
-    let token = tokens.next()?;
-    lexical::parse(token).ok()
 }
 
 #[cfg(test)]

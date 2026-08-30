@@ -4,9 +4,10 @@
 //! proc-filesystem access layer). The collection framework and the exporter
 //! application never see `procfs` types.
 //!
-//! Currently implements uptime, per-process I/O, and network interface
-//! metrics. Each sampling cycle reads each `/proc/<pid>/` file at most once;
-//! per-tick allocations are limited to one owned `String` per process.
+//! Currently implements uptime, load average, per-process I/O, and network
+//! interface metrics. Each sampling cycle reads each `/proc/<pid>/` file at
+//! most once; per-tick allocations are limited to one owned `String` per
+//! process.
 
 mod host;
 mod net;
