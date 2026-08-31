@@ -3,10 +3,10 @@ use crate::error::ProcError;
 use std::path::Path;
 
 pub fn parse_comm(path: &Path) -> ProcResult<String> {
-    match std::fs::read(&path) {
+    match std::fs::read(path) {
         Ok(content) => {
             let content = content.strip_suffix(b"\n").unwrap_or(&content);
-            let comm = String::from_utf8_lossy(&content).into_owned();
+            let comm = String::from_utf8_lossy(content).into_owned();
             Ok(comm)
         }
         Err(err) => Err(ProcError::IOError(err)),
@@ -14,7 +14,7 @@ pub fn parse_comm(path: &Path) -> ProcResult<String> {
 }
 
 pub fn parse_cmdline(path: &Path) -> ProcResult<String> {
-    match std::fs::read(&path) {
+    match std::fs::read(path) {
         Ok(content) => {
             let mut args = String::with_capacity(content.len());
             for arg in content.split(|&c| c == 0).filter(|arg| !arg.is_empty()) {

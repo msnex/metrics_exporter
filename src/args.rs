@@ -10,5 +10,5 @@ pub struct Args {
 }
 
 pub fn args() -> &'static Args {
-    ARGS.get_or_init(|| Args::parse())
+    ARGS.get_or_init(Args::parse)
 }

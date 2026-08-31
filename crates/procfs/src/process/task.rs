@@ -6,7 +6,7 @@ use std::path::Path;
 pub fn get_process_tasks(root: &Path, ppid: Option<i32>) -> ProcResult<Vec<Process>> {
     let mut processes = Vec::new();
 
-    for entry in read_dir(&root)? {
+    for entry in read_dir(root)? {
         if entry.is_err() {
             continue;
         }

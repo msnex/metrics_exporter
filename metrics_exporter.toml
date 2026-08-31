@@ -27,7 +27,7 @@ per_core = false
 
 [metrics.host.disk]
 enable = true
-# devices = []
+exclude_devices = ["dm-.*", "loop\\d+", "nvme0n1p\\d+", "sda\\d+", "sdb\\d+", "sdc\\d+", "sr\\d+"]
 
 [log]
 # valid values: stdout, file

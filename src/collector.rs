@@ -71,22 +71,24 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
 
     let MetricsHostDiskCfg {
         enable: disk_enable,
-        devices: disk_devices,
+        exclude_devices,
     } = if let Some(disk_cfg) = cfg.disk.as_ref() {
         disk_cfg
     } else {
         &MetricsHostDiskCfg {
             enable: false,
-            devices: Vec::new(),
+            exclude_devices: Vec::new(),
         }
     };
 
-    let disk_set = if disk_devices.is_empty() {
+    let exclude_devices_regex = if exclude_devices.is_empty() {
         None
     } else {
-        Some(disk_devices.iter().cloned().collect::<HashSet<_>>())
+        Some(RegexSet::new(exclude_devices)?)
     };
-    let disk_filter = DiskFilter::builder().maybe_disks(disk_set).build();
+    let disk_filter = DiskFilter::builder()
+        .maybe_exclude_devices_regex(exclude_devices_regex)
+        .build();
 
     let collector_cfg = HostCollectorCfg::builder()
         .interval(Duration::from_secs(cfg.interval_secs))

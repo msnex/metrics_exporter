@@ -56,5 +56,5 @@ impl Process {
 #[inline]
 pub fn get_all_processes() -> ProcResult<Vec<Process>> {
     let proc_dir = Path::new(LINUX_PROC_PATH);
-    task::get_process_tasks(&proc_dir, None)
+    task::get_process_tasks(proc_dir, None)
 }

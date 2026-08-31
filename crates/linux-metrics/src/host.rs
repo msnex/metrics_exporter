@@ -6,6 +6,7 @@
 //! single `SampleGroup` (attributes `hostname` + `pid` + `comm`), so the `comm` string is
 //! built exactly once per process per cycle.
 
+use crate::names::*;
 use crate::{DiskFilter, NetFilter, ProcessFilter};
 use metrics_framework::{Collector, ItemKind, MetricItem, Number, SampleGroup};
 use opentelemetry::KeyValue;
@@ -27,275 +28,275 @@ mod MetricItemType {
 static ITEMS: &[MetricItem] = &[
     MetricItem {
         item_type: MetricItemType::Uptime,
-        name: "uptime",
+        name: NAME_UPTIME,
         kind: ItemKind::GaugeF64,
         unit: "s",
         description: "System uptime",
     },
     MetricItem {
         item_type: MetricItemType::Loadavg,
-        name: "loadavg_1m",
+        name: NAME_LOADAVG_1M,
         kind: ItemKind::GaugeF64,
         unit: "",
         description: "1m load average",
     },
     MetricItem {
         item_type: MetricItemType::Loadavg,
-        name: "loadavg_5m",
+        name: NAME_LOADAVG_5M,
         kind: ItemKind::GaugeF64,
         unit: "",
         description: "5m load average",
     },
     MetricItem {
         item_type: MetricItemType::Loadavg,
-        name: "loadavg_15m",
+        name: NAME_LOADAVG_15M,
         kind: ItemKind::GaugeF64,
         unit: "",
         description: "15m load average",
     },
     MetricItem {
         item_type: MetricItemType::Loadavg,
-        name: "loadavg_running_tasks",
+        name: NAME_LOADAVG_RUNNING_TASKS,
         kind: ItemKind::GaugeU64,
         unit: "{tasks}",
         description: "Number of currently running tasks",
     },
     MetricItem {
         item_type: MetricItemType::Loadavg,
-        name: "loadavg_total_tasks",
+        name: NAME_LOADAVG_TOTAL_TASKS,
         kind: ItemKind::GaugeU64,
         unit: "{tasks}",
         description: "Total number of tasks",
     },
     MetricItem {
         item_type: MetricItemType::Cpu,
-        name: "cpu_seconds_total",
+        name: NAME_CPU_SECONDS_TOTAL,
         kind: ItemKind::CounterF64,
         unit: "s",
         description: "Seconds the CPUs spent in each mode",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_rchar_total",
+        name: NAME_PROCESS_IO_RCHAR_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes the process has read (rchar)",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_wchar_total",
+        name: NAME_PROCESS_IO_WCHAR_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes the process has written (wchar)",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_read_bytes_total",
+        name: NAME_PROCESS_IO_READ_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Bytes of read(2) I/O for the process",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_write_bytes_total",
+        name: NAME_PROCESS_IO_WRITE_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Bytes of write(2) I/O for the process",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_cancelled_write_bytes_total",
+        name: NAME_PROCESS_IO_CANCELLED_WRITE_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Bytes of cancelled write(2) I/O for the process",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_syscr_total",
+        name: NAME_PROCESS_IO_SYSCR_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{operations}",
         description: "Number of read(2) syscalls for the process",
     },
     MetricItem {
         item_type: MetricItemType::Process,
-        name: "process_io_syscw_total",
+        name: NAME_PROCESS_IO_SYSCW_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{operations}",
         description: "Number of write(2) syscalls for the process",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_rx_bytes_total",
+        name: NAME_IFACE_RX_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes received by the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_rx_packets_total",
+        name: NAME_IFACE_RX_PACKETS_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of packets received by the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_rx_errs_total",
+        name: NAME_IFACE_RX_ERRS_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of receive errors on the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_rx_drop_total",
+        name: NAME_IFACE_RX_DROP_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of received packets dropped by the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_tx_bytes_total",
+        name: NAME_IFACE_TX_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes transmitted by the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_tx_packets_total",
+        name: NAME_IFACE_TX_PACKETS_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of packets transmitted by the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_tx_errs_total",
+        name: NAME_IFACE_TX_ERRS_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of transmit errors on the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Net,
-        name: "iface_tx_drop_total",
+        name: NAME_IFACE_TX_DROP_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of transmitted packets dropped by the network interface",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_read_bytes_total",
+        name: NAME_DISK_READ_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes read from the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_reads_completed_total",
+        name: NAME_DISK_READS_COMPLETED_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of reads completed successfully by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_reads_merged_total",
+        name: NAME_DISK_READS_MERGED_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of reads merged by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_read_time_seconds_total",
-        kind: ItemKind::CounterF64,
-        unit: "s",
+        name: NAME_DISK_READ_TIME_MS_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "ms",
         description: "Time spent reading from the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_write_bytes_total",
+        name: NAME_DISK_WRITE_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes written to the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_writes_completed_total",
+        name: NAME_DISK_WRITES_COMPLETED_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of writes completed successfully by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_writes_merged_total",
+        name: NAME_DISK_WRITES_MERGED_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of writes merged by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_write_time_seconds_total",
-        kind: ItemKind::CounterF64,
-        unit: "s",
+        name: NAME_DISK_WRITE_TIME_MS_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "ms",
         description: "Time spent writing to the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_io_now",
+        name: NAME_DISK_IO_IN_PROGRESS,
         kind: ItemKind::GaugeU64,
         unit: "{operations}",
         description: "Number of I/Os currently in progress on the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_io_time_seconds_total",
-        kind: ItemKind::CounterF64,
-        unit: "s",
+        name: NAME_DISK_IO_TIME_MS_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "ms",
         description: "Time spent doing I/Os on the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_io_time_weighted_seconds_total",
-        kind: ItemKind::CounterF64,
-        unit: "s",
+        name: NAME_DISK_IO_TIME_WEIGHTED_MS_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "ms",
         description: "Weighted time spent doing I/Os on the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_discard_bytes_total",
+        name: NAME_DISK_DISCARD_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "By",
         description: "Number of bytes discarded from the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_discards_completed_total",
+        name: NAME_DISK_DISCARDS_COMPLETED_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of discards completed successfully by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_discards_merged_total",
+        name: NAME_DISK_DISCARDS_MERGED_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of discards merged by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_discard_time_seconds_total",
-        kind: ItemKind::CounterF64,
-        unit: "s",
+        name: NAME_DISK_DISCARD_TIME_MS_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "ms",
         description: "Time spent discarding on the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_flush_requests_total",
+        name: NAME_DISK_FLUSH_REQUESTS_TOTAL,
         kind: ItemKind::CounterU64,
         unit: "{count}",
         description: "Number of flush requests completed successfully by the block device",
     },
     MetricItem {
         item_type: MetricItemType::Disk,
-        name: "disk_flush_time_seconds_total",
-        kind: ItemKind::CounterF64,
-        unit: "s",
+        name: NAME_DISK_FLUSH_TIME_MS_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "ms",
         description: "Time spent flushing the block device",
     },
 ];
@@ -353,7 +354,7 @@ impl Collector for HostCollector {
     fn items(&self) -> Vec<&MetricItem> {
         let mut items = Vec::new();
 
-        for item in ITEMS.as_ref() {
+        for item in ITEMS {
             match item.item_type {
                 MetricItemType::Uptime => items.push(item),
                 MetricItemType::Loadavg => items.push(item),
@@ -371,7 +372,7 @@ impl Collector for HostCollector {
         // uptime
         if let Ok(uptime) = procfs::uptime::uptime() {
             let mut group = SampleGroup::with_attrs(smallvec![self.hostname.clone()]);
-            group.push("uptime", Number::F64(uptime.uptime));
+            group.push(NAME_UPTIME, Number::F64(uptime.uptime));
             out.push(group);
         }
 
@@ -401,11 +402,14 @@ impl Collector for HostCollector {
 /// Append one host-level sample group for a `/proc/loadavg` snapshot.
 fn collect_loadavg_metrics(hostname: &KeyValue, loadavg: &LoadAvg, out: &mut Vec<SampleGroup>) {
     let mut group = SampleGroup::with_attrs(smallvec![hostname.clone()]);
-    group.push("loadavg_1m", Number::F64(loadavg.load1));
-    group.push("loadavg_5m", Number::F64(loadavg.load5));
-    group.push("loadavg_15m", Number::F64(loadavg.load15));
-    group.push("loadavg_running_tasks", Number::U64(loadavg.running as u64));
-    group.push("loadavg_total_tasks", Number::U64(loadavg.total as u64));
+    group.push(NAME_LOADAVG_1M, Number::F64(loadavg.load1));
+    group.push(NAME_LOADAVG_5M, Number::F64(loadavg.load5));
+    group.push(NAME_LOADAVG_15M, Number::F64(loadavg.load15));
+    group.push(
+        NAME_LOADAVG_RUNNING_TASKS,
+        Number::U64(loadavg.running as u64),
+    );
+    group.push(NAME_LOADAVG_TOTAL_TASKS, Number::U64(loadavg.total as u64));
     out.push(group);
 }
 
@@ -444,8 +448,9 @@ mod tests {
         assert!(
             out.iter()
                 .flat_map(|group| group.values.iter())
-                .any(|value| value.name == "iface_rx_bytes_total"),
-            "iface_rx_bytes_total missing from net sample"
+                .any(|value| value.name == NAME_IFACE_RX_BYTES_TOTAL),
+            "{} missing from net sample",
+            NAME_IFACE_RX_BYTES_TOTAL
         );
     }
 
@@ -471,11 +476,11 @@ mod tests {
                 .iter()
                 .any(|kv| { kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host" })
         );
-        assert_eq!(value(group, "loadavg_1m"), Number::F64(0.25));
-        assert_eq!(value(group, "loadavg_5m"), Number::F64(0.5));
-        assert_eq!(value(group, "loadavg_15m"), Number::F64(0.75));
-        assert_eq!(value(group, "loadavg_running_tasks"), Number::U64(2));
-        assert_eq!(value(group, "loadavg_total_tasks"), Number::U64(100));
+        assert_eq!(value(group, NAME_LOADAVG_1M), Number::F64(0.25));
+        assert_eq!(value(group, NAME_LOADAVG_5M), Number::F64(0.5));
+        assert_eq!(value(group, NAME_LOADAVG_15M), Number::F64(0.75));
+        assert_eq!(value(group, NAME_LOADAVG_RUNNING_TASKS), Number::U64(2));
+        assert_eq!(value(group, NAME_LOADAVG_TOTAL_TASKS), Number::U64(100));
     }
 
     #[test]
@@ -490,8 +495,9 @@ mod tests {
         assert!(
             out.iter()
                 .flat_map(|group| group.values.iter())
-                .any(|value| value.name == "loadavg_1m"),
-            "loadavg_1m missing from host sample"
+                .any(|value| value.name == NAME_LOADAVG_1M),
+            "{} missing from host sample",
+            NAME_LOADAVG_1M
         );
     }
 
@@ -517,8 +523,9 @@ mod tests {
         assert!(
             out.iter()
                 .flat_map(|group| group.values.iter())
-                .any(|value| value.name == "cpu_seconds_total"),
-            "cpu_seconds_total missing from host sample"
+                .any(|value| value.name == NAME_CPU_SECONDS_TOTAL),
+            "{} missing from host sample",
+            NAME_CPU_SECONDS_TOTAL
         );
     }
 
@@ -540,8 +547,9 @@ mod tests {
         assert!(
             out.iter()
                 .flat_map(|group| group.values.iter())
-                .any(|value| value.name == "disk_read_bytes_total"),
-            "disk_read_bytes_total missing from host sample"
+                .any(|value| value.name == NAME_DISK_READ_BYTES_TOTAL),
+            "{} missing from host sample",
+            NAME_DISK_READ_BYTES_TOTAL
         );
     }
 }

@@ -15,7 +15,7 @@ impl FileRead for Uptime {
         P: AsRef<std::path::Path>,
     {
         let content = std::fs::read_to_string(path)?;
-        let mut parts = content.trim().split_whitespace();
+        let mut parts = content.split_whitespace();
         let mut uptime = Self::default();
 
         if let Some(upts) = parts.next() {

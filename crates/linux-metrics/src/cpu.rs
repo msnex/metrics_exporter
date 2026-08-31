@@ -4,6 +4,7 @@
 //! per (cpu, mode) pair, with the attributes `hostname` + `cpu` + `mode`.
 //! Kernel ticks are converted to seconds using `USER_HZ = 100`.
 
+use crate::names::NAME_CPU_SECONDS_TOTAL;
 use metrics_framework::{Number, SampleGroup};
 use opentelemetry::KeyValue;
 use procfs::cpu::CpuTimes;
@@ -71,7 +72,7 @@ fn collect_cpu_times(
                 cpu_attr.clone(),
                 KeyValue::new("mode", *mode),
             ]);
-            group.push("cpu_seconds_total", Number::F64(ticks as f64 / USER_HZ));
+            group.push(NAME_CPU_SECONDS_TOTAL, Number::F64(ticks as f64 / USER_HZ));
             out.push(group);
         }
     }
@@ -138,22 +139,22 @@ mod tests {
         assert_eq!(out.len(), 10);
 
         let user = group(&out, "cpu", "user");
-        assert_eq!(value(user, "cpu_seconds_total"), Number::F64(1.0));
+        assert_eq!(value(user, NAME_CPU_SECONDS_TOTAL), Number::F64(1.0));
         assert!(
             user.attrs
                 .iter()
                 .any(|kv| kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host")
         );
         assert_eq!(
-            value(group(&out, "cpu", "system"), "cpu_seconds_total"),
+            value(group(&out, "cpu", "system"), NAME_CPU_SECONDS_TOTAL),
             Number::F64(0.5)
         );
         assert_eq!(
-            value(group(&out, "cpu", "idle"), "cpu_seconds_total"),
+            value(group(&out, "cpu", "idle"), NAME_CPU_SECONDS_TOTAL),
             Number::F64(8.5)
         );
         assert_eq!(
-            value(group(&out, "cpu", "guest"), "cpu_seconds_total"),
+            value(group(&out, "cpu", "guest"), NAME_CPU_SECONDS_TOTAL),
             Number::F64(0.0)
         );
     }
@@ -167,11 +168,11 @@ mod tests {
         // Aggregate + cpu0 + cpu1, each with 10 mode groups.
         assert_eq!(out.len(), 30);
         assert_eq!(
-            value(group(&out, "cpu0", "user"), "cpu_seconds_total"),
+            value(group(&out, "cpu0", "user"), NAME_CPU_SECONDS_TOTAL),
             Number::F64(0.3)
         );
         assert_eq!(
-            value(group(&out, "cpu1", "user"), "cpu_seconds_total"),
+            value(group(&out, "cpu1", "user"), NAME_CPU_SECONDS_TOTAL),
             Number::F64(0.7)
         );
     }

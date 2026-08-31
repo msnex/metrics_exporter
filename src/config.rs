@@ -80,7 +80,7 @@ pub struct MetricsHostDiskCfg {
     pub enable: bool,
     /// Explicit device allow-list; empty means whole disks only.
     #[serde(default)]
-    pub devices: Vec<String>,
+    pub exclude_devices: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -130,7 +130,7 @@ pub fn config() -> &'static Config {
     CONFIG.get_or_init(|| {
         let cfg = Config::new(&args::args().config);
         if let Err(err) = cfg {
-            panic!("Failed to parse config: {}", err.to_string());
+            panic!("Failed to parse config: {}", err);
         }
         cfg.unwrap()
     })

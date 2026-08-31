@@ -6,17 +6,23 @@
 //! milliseconds to seconds, matching the conventions used for the other
 //! metric families.
 
+use crate::names::{
+    NAME_DISK_DISCARD_BYTES_TOTAL, NAME_DISK_DISCARD_TIME_MS_TOTAL,
+    NAME_DISK_DISCARDS_COMPLETED_TOTAL, NAME_DISK_DISCARDS_MERGED_TOTAL,
+    NAME_DISK_FLUSH_REQUESTS_TOTAL, NAME_DISK_FLUSH_TIME_MS_TOTAL, NAME_DISK_IO_IN_PROGRESS,
+    NAME_DISK_IO_TIME_MS_TOTAL, NAME_DISK_IO_TIME_WEIGHTED_MS_TOTAL, NAME_DISK_READ_BYTES_TOTAL,
+    NAME_DISK_READ_TIME_MS_TOTAL, NAME_DISK_READS_COMPLETED_TOTAL, NAME_DISK_READS_MERGED_TOTAL,
+    NAME_DISK_WRITE_BYTES_TOTAL, NAME_DISK_WRITE_TIME_MS_TOTAL, NAME_DISK_WRITES_COMPLETED_TOTAL,
+    NAME_DISK_WRITES_MERGED_TOTAL,
+};
 use metrics_framework::{Number, SampleGroup};
 use opentelemetry::KeyValue;
 use procfs::diskstats::DiskStat;
+use regex::RegexSet;
 use smallvec::smallvec;
-use std::collections::HashSet;
-use std::path::Path;
 
 /// Bytes per sector as reported by the kernel in `/proc/diskstats`.
 const SECTOR_SIZE: u64 = 512;
-/// Milliseconds per second, used to convert `/proc/diskstats` times.
-const MS_PER_SEC: f64 = 1000.0;
 
 /// Filter for which block devices to collect.
 ///
@@ -25,7 +31,7 @@ const MS_PER_SEC: f64 = 1000.0;
 /// the partition check, so partitions can be requested by name.
 #[derive(Default, Clone, bon::Builder)]
 pub struct DiskFilter {
-    disks: Option<HashSet<String>>,
+    exclude_devices_regex: Option<RegexSet>,
 }
 
 /// Read `/proc/diskstats` and append one sample group per matching device.
@@ -44,7 +50,9 @@ fn collect_disk_devices(
     out: &mut Vec<SampleGroup>,
 ) {
     for stat in disks {
-        if !should_collect(filter, &stat.name, is_partition) {
+        if let Some(exclude_regex) = filter.exclude_devices_regex.as_ref()
+            && exclude_regex.is_match(&stat.name)
+        {
             continue;
         }
 
@@ -53,87 +61,57 @@ fn collect_disk_devices(
             KeyValue::new("device", stat.name),
         ]);
         group.push(
-            "disk_read_bytes_total",
+            NAME_DISK_READ_BYTES_TOTAL,
             Number::U64(stat.sectors_read * SECTOR_SIZE),
         );
         group.push(
-            "disk_reads_completed_total",
+            NAME_DISK_READS_COMPLETED_TOTAL,
             Number::U64(stat.reads_completed),
         );
-        group.push("disk_reads_merged_total", Number::U64(stat.reads_merged));
+        group.push(NAME_DISK_READS_MERGED_TOTAL, Number::U64(stat.reads_merged));
+        group.push(NAME_DISK_READ_TIME_MS_TOTAL, Number::U64(stat.read_ms));
         group.push(
-            "disk_read_time_seconds_total",
-            Number::F64(stat.read_ms as f64 / MS_PER_SEC),
-        );
-        group.push(
-            "disk_write_bytes_total",
+            NAME_DISK_WRITE_BYTES_TOTAL,
             Number::U64(stat.sectors_written * SECTOR_SIZE),
         );
         group.push(
-            "disk_writes_completed_total",
+            NAME_DISK_WRITES_COMPLETED_TOTAL,
             Number::U64(stat.writes_completed),
         );
-        group.push("disk_writes_merged_total", Number::U64(stat.writes_merged));
         group.push(
-            "disk_write_time_seconds_total",
-            Number::F64(stat.write_ms as f64 / MS_PER_SEC),
+            NAME_DISK_WRITES_MERGED_TOTAL,
+            Number::U64(stat.writes_merged),
         );
-        group.push("disk_io_now", Number::U64(stat.io_in_progress));
+        group.push(NAME_DISK_WRITE_TIME_MS_TOTAL, Number::U64(stat.write_ms));
+        group.push(NAME_DISK_IO_IN_PROGRESS, Number::U64(stat.io_in_progress));
+        group.push(NAME_DISK_IO_TIME_MS_TOTAL, Number::U64(stat.io_ms));
         group.push(
-            "disk_io_time_seconds_total",
-            Number::F64(stat.io_ms as f64 / MS_PER_SEC),
-        );
-        group.push(
-            "disk_io_time_weighted_seconds_total",
-            Number::F64(stat.weighted_io_ms as f64 / MS_PER_SEC),
+            NAME_DISK_IO_TIME_WEIGHTED_MS_TOTAL,
+            Number::U64(stat.weighted_io_ms),
         );
         group.push(
-            "disk_discard_bytes_total",
+            NAME_DISK_DISCARD_BYTES_TOTAL,
             Number::U64(stat.sectors_discarded * SECTOR_SIZE),
         );
         group.push(
-            "disk_discards_completed_total",
+            NAME_DISK_DISCARDS_COMPLETED_TOTAL,
             Number::U64(stat.discards_completed),
         );
         group.push(
-            "disk_discards_merged_total",
+            NAME_DISK_DISCARDS_MERGED_TOTAL,
             Number::U64(stat.discards_merged),
         );
         group.push(
-            "disk_discard_time_seconds_total",
-            Number::F64(stat.discard_ms as f64 / MS_PER_SEC),
+            NAME_DISK_DISCARD_TIME_MS_TOTAL,
+            Number::U64(stat.discard_ms),
         );
         group.push(
-            "disk_flush_requests_total",
+            NAME_DISK_FLUSH_REQUESTS_TOTAL,
             Number::U64(stat.flush_requests),
         );
-        group.push(
-            "disk_flush_time_seconds_total",
-            Number::F64(stat.flush_ms as f64 / MS_PER_SEC),
-        );
+        group.push(NAME_DISK_FLUSH_TIME_MS_TOTAL, Number::U64(stat.flush_ms));
         out.push(group);
     }
-}
-
-/// Decide whether a device passes the filter.
-///
-/// `is_partition` is injected so the default whole-disk policy is testable
-/// without depending on the host's sysfs contents.
-fn should_collect(filter: &DiskFilter, name: &str, is_partition: impl Fn(&str) -> bool) -> bool {
-    match filter.disks.as_ref() {
-        Some(disks) => disks.contains(name),
-        None => !is_partition(name),
-    }
-}
-
-/// True when the device is a partition, detected via the sysfs marker
-/// `/sys/class/block/<name>/partition`. When sysfs is unavailable the
-/// device is treated as a whole disk so real devices are never dropped.
-fn is_partition(name: &str) -> bool {
-    Path::new("/sys/class/block")
-        .join(name)
-        .join("partition")
-        .exists()
 }
 
 #[cfg(test)]
@@ -200,18 +178,28 @@ mod tests {
     }
 
     #[test]
-    fn collect_disk_devices_emits_all_metrics() {
+    fn collect_all_disk_devices() {
         let hostname = KeyValue::new("hostname", Arc::from("test-host"));
-        let mut whole_disks = HashSet::new();
-        for disk in sample_disks() {
-            whole_disks.insert(disk.name);
-        }
-        let filter = DiskFilter::builder().maybe_disks(Some(whole_disks)).build();
+        let filter = DiskFilter::builder().build();
 
         let mut out = Vec::new();
         collect_disk_devices(&hostname, &filter, sample_disks(), &mut out);
 
         assert_eq!(out.len(), 4);
+    }
+
+    #[test]
+    fn collect_excluded_disk_devices() {
+        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let exclude_regex = RegexSet::new(&["sda\\d+", "nvme0n1p\\d+"]).unwrap();
+        let filter = DiskFilter::builder()
+            .exclude_devices_regex(exclude_regex)
+            .build();
+
+        let mut out = Vec::new();
+        collect_disk_devices(&hostname, &filter, sample_disks(), &mut out);
+
+        assert_eq!(out.len(), 2);
         let sda = group(&out, "sda");
         assert!(
             sda.attrs
@@ -219,90 +207,45 @@ mod tests {
                 .any(|kv| kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host")
         );
         assert_eq!(
-            value(sda, "disk_read_bytes_total"),
+            value(sda, NAME_DISK_READ_BYTES_TOTAL),
             Number::U64(100 * SECTOR_SIZE)
         );
-        assert_eq!(value(sda, "disk_reads_completed_total"), Number::U64(10));
-        assert_eq!(value(sda, "disk_read_merged_total"), Number::U64(2));
+        assert_eq!(value(sda, NAME_DISK_READS_COMPLETED_TOTAL), Number::U64(10));
+        assert_eq!(value(sda, NAME_DISK_READS_MERGED_TOTAL), Number::U64(2));
+        assert_eq!(value(sda, NAME_DISK_READ_TIME_MS_TOTAL), Number::F64(0.02));
         assert_eq!(
-            value(sda, "disk_read_time_seconds_total"),
-            Number::F64(0.02)
-        );
-        assert_eq!(
-            value(sda, "disk_write_bytes_total"),
+            value(sda, NAME_DISK_WRITE_BYTES_TOTAL),
             Number::U64(200 * SECTOR_SIZE)
         );
-        assert_eq!(value(sda, "disk_writes_completed_total"), Number::U64(30));
-        assert_eq!(value(sda, "disk_write_merged_total"), Number::U64(4));
         assert_eq!(
-            value(sda, "disk_write_time_seconds_total"),
-            Number::F64(0.04)
+            value(sda, NAME_DISK_WRITES_COMPLETED_TOTAL),
+            Number::U64(30)
         );
-        assert_eq!(value(sda, "disk_io_now"), Number::U64(1));
-        assert_eq!(value(sda, "disk_io_time_seconds_total"), Number::F64(0.06));
+        assert_eq!(value(sda, NAME_DISK_WRITES_MERGED_TOTAL), Number::U64(4));
+        assert_eq!(value(sda, NAME_DISK_WRITE_TIME_MS_TOTAL), Number::F64(0.04));
+        assert_eq!(value(sda, NAME_DISK_IO_IN_PROGRESS), Number::U64(1));
+        assert_eq!(value(sda, NAME_DISK_IO_TIME_MS_TOTAL), Number::F64(0.06));
         assert_eq!(
-            value(sda, "disk_io_time_weighted_seconds_total"),
+            value(sda, NAME_DISK_IO_TIME_WEIGHTED_MS_TOTAL),
             Number::F64(0.07)
         );
         assert_eq!(
-            value(sda, "disk_discard_bytes_total"),
+            value(sda, NAME_DISK_DISCARD_BYTES_TOTAL),
             Number::U64(50 * SECTOR_SIZE)
         );
-        assert_eq!(value(sda, "disk_discards_completed_total"), Number::U64(5));
-        assert_eq!(value(sda, "disk_discards_merged_total"), Number::U64(1));
         assert_eq!(
-            value(sda, "disk_discard_time_seconds_total"),
+            value(sda, NAME_DISK_DISCARDS_COMPLETED_TOTAL),
+            Number::U64(5)
+        );
+        assert_eq!(value(sda, NAME_DISK_DISCARDS_MERGED_TOTAL), Number::U64(1));
+        assert_eq!(
+            value(sda, NAME_DISK_DISCARD_TIME_MS_TOTAL),
             Number::F64(0.006)
         );
-        assert_eq!(value(sda, "disk_flush_requests_total"), Number::U64(7));
+        assert_eq!(value(sda, NAME_DISK_FLUSH_REQUESTS_TOTAL), Number::U64(7));
         assert_eq!(
-            value(sda, "disk_flush_time_seconds_total"),
+            value(sda, NAME_DISK_FLUSH_TIME_MS_TOTAL),
             Number::F64(0.008)
-        );
-    }
-
-    #[test]
-    fn should_collect_defaults_to_whole_disks() {
-        let filter = DiskFilter::default();
-        let is_partition = |name: &str| matches!(name, "sda1" | "nvme0n1p1" | "mmcblk0p1");
-
-        assert!(should_collect(&filter, "sda", is_partition));
-        assert!(should_collect(&filter, "nvme0n1", is_partition));
-        assert!(should_collect(&filter, "mmcblk0", is_partition));
-        assert!(!should_collect(&filter, "sda1", is_partition));
-        assert!(!should_collect(&filter, "nvme0n1p1", is_partition));
-        assert!(!should_collect(&filter, "mmcblk0p1", is_partition));
-    }
-
-    #[test]
-    fn should_collect_explicit_devices_skips_partition_check() {
-        let mut disks = HashSet::new();
-        disks.insert("sda1".to_string());
-        let filter = DiskFilter::builder().maybe_disks(Some(disks)).build();
-
-        // The injected predicate would exclude sda1, but the explicit list
-        // takes precedence.
-        let is_partition = |_: &str| true;
-        assert!(should_collect(&filter, "sda1", is_partition));
-        assert!(!should_collect(&filter, "sda", is_partition));
-    }
-
-    #[test]
-    fn collect_disk_devices_filters_exact_devices() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
-        let mut disks = HashSet::new();
-        disks.insert("sda1".to_string());
-        let filter = DiskFilter::builder().maybe_disks(Some(disks)).build();
-
-        let mut out = Vec::new();
-        collect_disk_devices(&hostname, &filter, sample_disks(), &mut out);
-
-        assert_eq!(out.len(), 1);
-        assert!(
-            out[0]
-                .attrs
-                .iter()
-                .any(|kv| kv.key.as_str() == "device" && kv.value.as_str() == "sda1")
         );
     }
 }

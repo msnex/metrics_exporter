@@ -3,8 +3,8 @@
   "kind": "Dashboard",
   "metadata": {
     "name": "admzrgv",
-    "generation": 65,
-    "creationTimestamp": "2026-08-29T23:18:51Z",
+    "generation": 41,
+    "creationTimestamp": "2026-08-31T01:37:31Z",
     "labels": {},
     "annotations": {}
   },
@@ -17,10 +17,7 @@
             "kind": "DataQuery",
             "group": "grafana",
             "version": "v0",
-            "spec": {},
-            "labels": {
-              "grafana.app/export-label": "grafana-1"
-            }
+            "spec": {}
           },
           "enable": true,
           "hide": true,
@@ -53,7 +50,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_rx_bytes_total[$__rate_interval])",
+                        "expr": "rate(iface_rx_bytes_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
@@ -105,10 +102,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -178,7 +171,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_tx_bytes_total[$__rate_interval])",
+                        "expr": "rate(iface_tx_bytes_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
@@ -229,10 +222,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -302,7 +291,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_tx_errs_total[$__rate_interval])",
+                        "expr": "rate(iface_tx_errs_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}-error",
@@ -326,7 +315,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_tx_drop_total[$__rate_interval])",
+                        "expr": "rate(iface_tx_drop_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}-drop",
@@ -376,10 +365,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -449,7 +434,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_rx_errs_total[$__rate_interval])",
+                        "expr": "rate(iface_rx_errs_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}-error",
@@ -473,7 +458,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_rx_drop_total[$__rate_interval])",
+                        "expr": "rate(iface_rx_drop_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}-drop",
@@ -523,10 +508,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -581,7 +562,7 @@
         "spec": {
           "id": 13,
           "title": "Disk completed/s",
-          "description": "Numnber of reads or writes completed per second",
+          "description": "Numnber of read, write, discard completed or flush request per second",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -596,7 +577,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(disk_reads_completed_total{device!~\"dm-.*|sr.*\"}[$__rate_interval])",
+                        "expr": "rate(disk_reads_completed_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
@@ -620,7 +601,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(disk_writes_completed_total{device!~\"dm-.*|sr.*\"}[$__rate_interval])",
+                        "expr": "rate(disk_writes_completed_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
@@ -632,6 +613,54 @@
                       }
                     },
                     "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "rate(disk_discards_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-discard",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "rate(disk_flush_requests_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-flush",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "D",
                     "hidden": false
                   }
                 }
@@ -650,7 +679,7 @@
               "options": {
                 "legend": {
                   "calcs": [
-                    "lastNotNull"
+                    "max"
                   ],
                   "displayMode": "list",
                   "placement": "bottom",
@@ -659,7 +688,7 @@
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "asc"
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
@@ -672,10 +701,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -730,7 +755,7 @@
         "spec": {
           "id": 14,
           "title": "Disk merged/s",
-          "description": "Numnber of reads or writes merged per second",
+          "description": "Numnber of read, write or discard merged per second",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -745,7 +770,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(disk_reads_merged_total{device!~\"dm-.*|sr.*\"}[$__rate_interval])",
+                        "expr": "rate(disk_reads_merged_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
@@ -769,7 +794,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(disk_writes_merged_total{device!~\"dm-.*|sr.*\"}[$__rate_interval])",
+                        "expr": "rate(disk_writes_merged_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
@@ -781,6 +806,30 @@
                       }
                     },
                     "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "rate(disk_discards_merged_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-discard",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
                     "hidden": false
                   }
                 }
@@ -799,7 +848,7 @@
               "options": {
                 "legend": {
                   "calcs": [
-                    "lastNotNull"
+                    "max"
                   ],
                   "displayMode": "list",
                   "placement": "bottom",
@@ -808,7 +857,7 @@
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "asc"
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
@@ -821,10 +870,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -894,11 +939,12 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100 * rate(disk_reads_merged_total{device!~\"dm-.*|sr.*\"}[$__rate_interval]) / (rate(disk_reads_merged_total{device!~\"dm-.*|sr.*\"}[$__rate_interval]) + rate(disk_reads_completed_total{device!~\"dm-.*|sr.*\"}[$__rate_interval]))",
+                        "expr": "100 * rate(disk_reads_merged_total[$__interval]) / (rate(disk_reads_merged_total[$__interval]) + rate(disk_reads_completed_total[$__interval]))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
-                        "range": true
+                        "range": true,
+                        "trace": 1
                       },
                       "labels": {
                         "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
@@ -918,7 +964,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100 * rate(disk_writes_merged_total{device!~\"dm-.*|sr.*\"}[$__rate_interval]) / (rate(disk_writes_merged_total{device!~\"dm-.*|sr.*\"}[$__rate_interval]) + rate(disk_writes_completed_total{device!~\"dm-.*|sr.*\"}[$__rate_interval]))",
+                        "expr": "100 * rate(disk_writes_merged_total[$__interval]) / (rate(disk_writes_merged_total[$__interval]) + rate(disk_writes_completed_total[$__interval]))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
@@ -930,6 +976,30 @@
                       }
                     },
                     "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "100 * rate(disk_discards_merged_total[$__interval]) / (rate(disk_discards_merged_total[$__interval]) + rate(disk_discards_completed_total[$__interval]))",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-discard",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
                     "hidden": false
                   }
                 }
@@ -957,7 +1027,7 @@
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "asc"
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
@@ -970,10 +1040,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -1023,6 +1089,580 @@
           "transparent": true
         }
       },
+      "panel-16": {
+        "kind": "Panel",
+        "spec": {
+          "id": 16,
+          "title": "Disk Avg Wait Time",
+          "description": "Average waiting time for read, write, discard, and flush I/O operations",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(disk_read_time_ms_total[$__interval]) / rate(disk_reads_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-read",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(disk_write_time_ms_total[$__interval]) / rate(disk_writes_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-write",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(disk_discard_time_ms_total[$__interval]) / rate(disk_discards_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-discard",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(disk_flush_time_ms_total[$__interval]) / rate(disk_flush_requests_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-flush",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "D",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "1s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "ms",
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "noValue": "0",
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "smooth",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-17": {
+        "kind": "Panel",
+        "spec": {
+          "id": 17,
+          "title": "Disk Avg IO Queue Size",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(disk_io_time_weighted_ms_total[$__interval]) / 1000",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}",
+                        "range": true,
+                        "trace": 1
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "1s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "noValue": "0",
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "smooth",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-18": {
+        "kind": "Panel",
+        "spec": {
+          "id": 18,
+          "title": "Disk Util",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "100 * rate(disk_io_time_ms_total[$__interval]) / 1000",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}",
+                        "range": true,
+                        "trace": 1
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "1s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "noValue": "0",
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 0,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "smooth",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "showValues": false,
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-19": {
+        "kind": "Panel",
+        "spec": {
+          "id": 19,
+          "title": "Disk IOPS",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "rate(disk_reads_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Read",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "rate(disk_writes_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Write",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(disk_reads_completed_total[$__interval]) + rate(disk_writes_completed_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Total",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "1s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": false
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "iops",
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "#ad46ff"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
       "panel-2": {
         "kind": "Panel",
         "spec": {
@@ -1043,7 +1683,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_rx_packets_total[$__rate_interval])",
+                        "expr": "rate(iface_rx_packets_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
@@ -1095,10 +1735,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -1139,6 +1775,117 @@
                     "thresholdsStyle": {
                       "mode": "off"
                     }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-20": {
+        "kind": "Panel",
+        "spec": {
+          "id": 20,
+          "title": "Network pps",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum(rate(iface_rx_packets_total[$__interval]))",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "RX",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum(rate(iface_tx_packets_total[$__interval]))",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "TX",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "1s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": false
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "pps",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
                   }
                 },
                 "overrides": []
@@ -1391,7 +2138,7 @@
         "kind": "Panel",
         "spec": {
           "id": 5,
-          "title": "Network Bytes",
+          "title": "Network Bps",
           "description": "",
           "links": [],
           "data": {
@@ -1406,8 +2153,8 @@
                       "group": "victoriametrics-metrics-datasource",
                       "version": "v0",
                       "spec": {
-                        "editorMode": "builder",
-                        "expr": "sum(iface_rx_bytes_total)",
+                        "editorMode": "code",
+                        "expr": "sum(rate(iface_rx_bytes_total[$__interval]))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "RX",
@@ -1430,8 +2177,8 @@
                       "group": "victoriametrics-metrics-datasource",
                       "version": "v0",
                       "spec": {
-                        "editorMode": "builder",
-                        "expr": "sum(iface_tx_bytes_total)",
+                        "editorMode": "code",
+                        "expr": "sum(rate(iface_tx_bytes_total[$__interval]))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "TX",
@@ -1477,7 +2224,7 @@
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "bytes",
+                  "unit": "binBps",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1518,7 +2265,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"user\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"user\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1542,7 +2289,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"system\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"system\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1566,7 +2313,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"nice\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"nice\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1590,7 +2337,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"iowait\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"iowait\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1614,7 +2361,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"irq\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"irq\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1638,7 +2385,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"softirq\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"softirq\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1662,7 +2409,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"steal\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"steal\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1686,7 +2433,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"guest\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"guest\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1710,7 +2457,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "100\r\n  *\r\n(\r\n  rate(cpu_seconds_total{cpu=\"cpu\",mode=\"guest_nice\"})\r\n    /\r\n  sum(rate(cpu_seconds_total{cpu=\"cpu\"}))\r\n)",
+                        "expr": "100 * (rate(cpu_seconds_total{cpu=\"cpu\",mode=\"guest_nice\"}[$__interval]) / sum(rate(cpu_seconds_total{cpu=\"cpu\"}[$__interval])))",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
@@ -1763,10 +2510,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -1820,7 +2563,7 @@
         "kind": "Panel",
         "spec": {
           "id": 7,
-          "title": "Disk Bytes",
+          "title": "Disk Bps",
           "description": "",
           "links": [],
           "data": {
@@ -1835,10 +2578,10 @@
                       "group": "victoriametrics-metrics-datasource",
                       "version": "v0",
                       "spec": {
-                        "editorMode": "builder",
-                        "expr": "sum(disk_read_bytes_total)",
+                        "editorMode": "code",
+                        "expr": "sum(rate(disk_read_bytes_total[$__interval]))",
                         "format": "time_series",
-                        "interval": "",
+                        "interval": "1s",
                         "legendFormat": "Read",
                         "range": true
                       },
@@ -1859,9 +2602,10 @@
                       "group": "victoriametrics-metrics-datasource",
                       "version": "v0",
                       "spec": {
-                        "editorMode": "builder",
-                        "expr": "sum(disk_write_bytes_total)",
+                        "editorMode": "code",
+                        "expr": "sum(rate(disk_write_bytes_total[$__interval]))",
                         "format": "time_series",
+                        "interval": "1s",
                         "legendFormat": "Write",
                         "range": true
                       },
@@ -1873,10 +2617,36 @@
                     "refId": "B",
                     "hidden": false
                   }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum(rate(disk_read_bytes_total[$__interval])) + sum(rate(disk_write_bytes_total[$__interval]))",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Total",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "interval": "1s"
+              }
             }
           },
           "vizConfig": {
@@ -1903,7 +2673,8 @@
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "bytes",
+                  "unit": "binBps",
+                  "decimals": 2,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1944,7 +2715,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(disk_read_bytes_total{device!~\"dm-.*|sr.*\"}[$__rate_interval])",
+                        "expr": "rate(disk_read_bytes_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
@@ -1968,7 +2739,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(disk_write_bytes_total{device!~\"dm-.*|sr.*\"}[$__rate_interval])",
+                        "expr": "rate(disk_write_bytes_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
@@ -1980,6 +2751,30 @@
                       }
                     },
                     "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "rate(disk_discard_bytes_total[$__interval])",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "{{device}}-discard",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
                     "hidden": false
                   }
                 }
@@ -1998,7 +2793,7 @@
               "options": {
                 "legend": {
                   "calcs": [
-                    "lastNotNull"
+                    "max"
                   ],
                   "displayMode": "list",
                   "placement": "bottom",
@@ -2007,7 +2802,7 @@
                 "tooltip": {
                   "hideZeros": false,
                   "mode": "multi",
-                  "sort": "asc"
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
@@ -2019,10 +2814,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -2092,7 +2883,7 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "builder",
-                        "expr": "rate(iface_tx_packets_total[$__rate_interval])",
+                        "expr": "rate(iface_tx_packets_total[$__interval])",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
@@ -2143,10 +2934,6 @@
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
                   },
@@ -2215,7 +3002,7 @@
                         "x": 0,
                         "y": 0,
                         "width": 4,
-                        "height": 3,
+                        "height": 4,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-3"
@@ -2228,7 +3015,7 @@
                         "x": 4,
                         "y": 0,
                         "width": 7,
-                        "height": 3,
+                        "height": 4,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-4"
@@ -2241,7 +3028,7 @@
                         "x": 11,
                         "y": 0,
                         "width": 6,
-                        "height": 3,
+                        "height": 4,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-5"
@@ -2254,7 +3041,33 @@
                         "x": 17,
                         "y": 0,
                         "width": 7,
-                        "height": 3,
+                        "height": 4,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-20"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 4,
+                        "width": 12,
+                        "height": 4,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-19"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 4,
+                        "width": 12,
+                        "height": 4,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-7"
@@ -2265,7 +3078,7 @@
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 0,
-                        "y": 3,
+                        "y": 8,
                         "width": 24,
                         "height": 7,
                         "element": {
@@ -2455,6 +3268,45 @@
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-15"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 21,
+                        "width": 24,
+                        "height": 7,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-16"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 28,
+                        "width": 24,
+                        "height": 7,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-17"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 35,
+                        "width": 24,
+                        "height": 7,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-18"
                         }
                       }
                     }

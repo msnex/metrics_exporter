@@ -1,3 +1,8 @@
+use crate::names::{
+    NAME_PROCESS_IO_CANCELLED_WRITE_BYTES_TOTAL, NAME_PROCESS_IO_RCHAR_TOTAL,
+    NAME_PROCESS_IO_READ_BYTES_TOTAL, NAME_PROCESS_IO_SYSCR_TOTAL, NAME_PROCESS_IO_SYSCW_TOTAL,
+    NAME_PROCESS_IO_WCHAR_TOTAL, NAME_PROCESS_IO_WRITE_BYTES_TOTAL,
+};
 use metrics_framework::Number;
 use metrics_framework::SampleGroup;
 use opentelemetry::KeyValue;
@@ -31,10 +36,10 @@ fn collect_process(
             continue;
         };
 
-        if let Some(comms_regex) = cfg.comms_regex.as_ref() {
-            if !comms_regex.is_match(&comm) {
-                continue;
-            }
+        if let Some(comms_regex) = cfg.comms_regex.as_ref()
+            && !comms_regex.is_match(&comm)
+        {
+            continue;
         }
 
         let mut group = SampleGroup::with_attrs(smallvec![
@@ -45,14 +50,17 @@ fn collect_process(
 
         match process.io() {
             Ok(io) => {
-                group.push("process_io_rchar_total", Number::U64(io.rchar));
-                group.push("process_io_wchar_total", Number::U64(io.wchar));
-                group.push("process_io_syscr_total", Number::U64(io.syscr));
-                group.push("process_io_syscw_total", Number::U64(io.syscw));
-                group.push("process_io_read_bytes_total", Number::U64(io.read_bytes));
-                group.push("process_io_write_bytes_total", Number::U64(io.write_bytes));
+                group.push(NAME_PROCESS_IO_RCHAR_TOTAL, Number::U64(io.rchar));
+                group.push(NAME_PROCESS_IO_WCHAR_TOTAL, Number::U64(io.wchar));
+                group.push(NAME_PROCESS_IO_SYSCR_TOTAL, Number::U64(io.syscr));
+                group.push(NAME_PROCESS_IO_SYSCW_TOTAL, Number::U64(io.syscw));
+                group.push(NAME_PROCESS_IO_READ_BYTES_TOTAL, Number::U64(io.read_bytes));
                 group.push(
-                    "process_io_cancelled_write_bytes_total",
+                    NAME_PROCESS_IO_WRITE_BYTES_TOTAL,
+                    Number::U64(io.write_bytes),
+                );
+                group.push(
+                    NAME_PROCESS_IO_CANCELLED_WRITE_BYTES_TOTAL,
                     Number::U64(io.cancelled_write_bytes),
                 );
                 out.push(group);

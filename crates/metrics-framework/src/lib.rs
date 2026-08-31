@@ -145,7 +145,7 @@ impl Registry {
         }
 
         let stop = Arc::new(AtomicBool::new(false));
-        let handle = std::thread::Builder::new().name(format!("{name}")).spawn({
+        let handle = std::thread::Builder::new().name(name.to_string()).spawn({
             let cache = cache.clone();
             let stop = stop.clone();
             let mut collector = collector;

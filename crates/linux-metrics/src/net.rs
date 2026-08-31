@@ -1,3 +1,8 @@
+use crate::names::{
+    NAME_IFACE_RX_BYTES_TOTAL, NAME_IFACE_RX_DROP_TOTAL, NAME_IFACE_RX_ERRS_TOTAL,
+    NAME_IFACE_RX_PACKETS_TOTAL, NAME_IFACE_TX_BYTES_TOTAL, NAME_IFACE_TX_DROP_TOTAL,
+    NAME_IFACE_TX_ERRS_TOTAL, NAME_IFACE_TX_PACKETS_TOTAL,
+};
 use metrics_framework::{Number, SampleGroup};
 use opentelemetry::KeyValue;
 use procfs::net::IfaceStats;
@@ -35,14 +40,14 @@ fn collect_net_devices(
             hostname.clone(),
             KeyValue::new("iface", stats.name),
         ]);
-        group.push("iface_rx_bytes_total", Number::U64(stats.rx_bytes));
-        group.push("iface_rx_packets_total", Number::U64(stats.rx_packets));
-        group.push("iface_rx_errs_total", Number::U64(stats.rx_errs));
-        group.push("iface_rx_drop_total", Number::U64(stats.rx_drop));
-        group.push("iface_tx_bytes_total", Number::U64(stats.tx_bytes));
-        group.push("iface_tx_packets_total", Number::U64(stats.tx_packets));
-        group.push("iface_tx_errs_total", Number::U64(stats.tx_errs));
-        group.push("iface_tx_drop_total", Number::U64(stats.tx_drop));
+        group.push(NAME_IFACE_RX_BYTES_TOTAL, Number::U64(stats.rx_bytes));
+        group.push(NAME_IFACE_RX_PACKETS_TOTAL, Number::U64(stats.rx_packets));
+        group.push(NAME_IFACE_RX_ERRS_TOTAL, Number::U64(stats.rx_errs));
+        group.push(NAME_IFACE_RX_DROP_TOTAL, Number::U64(stats.rx_drop));
+        group.push(NAME_IFACE_TX_BYTES_TOTAL, Number::U64(stats.tx_bytes));
+        group.push(NAME_IFACE_TX_PACKETS_TOTAL, Number::U64(stats.tx_packets));
+        group.push(NAME_IFACE_TX_ERRS_TOTAL, Number::U64(stats.tx_errs));
+        group.push(NAME_IFACE_TX_DROP_TOTAL, Number::U64(stats.tx_drop));
         out.push(group);
     }
 }
@@ -113,14 +118,14 @@ mod tests {
                 .iter()
                 .any(|kv| { kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host" })
         );
-        assert_eq!(value(lo, "iface_rx_bytes_total"), Number::U64(100));
-        assert_eq!(value(lo, "iface_rx_packets_total"), Number::U64(200));
-        assert_eq!(value(lo, "iface_rx_errs_total"), Number::U64(300));
-        assert_eq!(value(lo, "iface_rx_drop_total"), Number::U64(400));
-        assert_eq!(value(lo, "iface_tx_bytes_total"), Number::U64(500));
-        assert_eq!(value(lo, "iface_tx_packets_total"), Number::U64(600));
-        assert_eq!(value(lo, "iface_tx_errs_total"), Number::U64(700));
-        assert_eq!(value(lo, "iface_tx_drop_total"), Number::U64(800));
+        assert_eq!(value(lo, NAME_IFACE_RX_BYTES_TOTAL), Number::U64(100));
+        assert_eq!(value(lo, NAME_IFACE_RX_PACKETS_TOTAL), Number::U64(200));
+        assert_eq!(value(lo, NAME_IFACE_RX_ERRS_TOTAL), Number::U64(300));
+        assert_eq!(value(lo, NAME_IFACE_RX_DROP_TOTAL), Number::U64(400));
+        assert_eq!(value(lo, NAME_IFACE_TX_BYTES_TOTAL), Number::U64(500));
+        assert_eq!(value(lo, NAME_IFACE_TX_PACKETS_TOTAL), Number::U64(600));
+        assert_eq!(value(lo, NAME_IFACE_TX_ERRS_TOTAL), Number::U64(700));
+        assert_eq!(value(lo, NAME_IFACE_TX_DROP_TOTAL), Number::U64(800));
     }
 
     #[test]

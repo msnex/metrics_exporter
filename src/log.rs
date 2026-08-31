@@ -12,7 +12,8 @@ fn log_level(level: &str) -> LevelFilter {
         "info" => LevelFilter::INFO,
         "warn" => LevelFilter::WARN,
         "error" => LevelFilter::ERROR,
-        "off" | _ => LevelFilter::OFF,
+        "off" => LevelFilter::OFF,
+        _ => LevelFilter::OFF,
     }
 }
 
@@ -22,7 +23,8 @@ fn log_file_rotation(rotation: &str) -> Rotation {
         "hourly" => Rotation::HOURLY,
         "daily" => Rotation::DAILY,
         "weekly" => Rotation::WEEKLY,
-        "never" | _ => Rotation::NEVER,
+        "never" => Rotation::NEVER,
+        _ => Rotation::NEVER,
     }
 }
 

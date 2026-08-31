@@ -1,0 +1,45 @@
+//! Metric names, the single source of truth for the crate's metric contract.
+//!
+//! Registration (`MetricItem::name`) and sampling (`SampleGroup::push`) both
+//! reference these constants, so renaming a metric requires exactly one edit.
+
+pub(crate) const NAME_UPTIME: &str = "uptime";
+pub(crate) const NAME_LOADAVG_1M: &str = "loadavg_1m";
+pub(crate) const NAME_LOADAVG_5M: &str = "loadavg_5m";
+pub(crate) const NAME_LOADAVG_15M: &str = "loadavg_15m";
+pub(crate) const NAME_LOADAVG_RUNNING_TASKS: &str = "loadavg_running_tasks";
+pub(crate) const NAME_LOADAVG_TOTAL_TASKS: &str = "loadavg_total_tasks";
+pub(crate) const NAME_CPU_SECONDS_TOTAL: &str = "cpu_seconds_total";
+pub(crate) const NAME_PROCESS_IO_RCHAR_TOTAL: &str = "process_io_rchar_total";
+pub(crate) const NAME_PROCESS_IO_WCHAR_TOTAL: &str = "process_io_wchar_total";
+pub(crate) const NAME_PROCESS_IO_READ_BYTES_TOTAL: &str = "process_io_read_bytes_total";
+pub(crate) const NAME_PROCESS_IO_WRITE_BYTES_TOTAL: &str = "process_io_write_bytes_total";
+pub(crate) const NAME_PROCESS_IO_CANCELLED_WRITE_BYTES_TOTAL: &str =
+    "process_io_cancelled_write_bytes_total";
+pub(crate) const NAME_PROCESS_IO_SYSCR_TOTAL: &str = "process_io_syscr_total";
+pub(crate) const NAME_PROCESS_IO_SYSCW_TOTAL: &str = "process_io_syscw_total";
+pub(crate) const NAME_IFACE_RX_BYTES_TOTAL: &str = "iface_rx_bytes_total";
+pub(crate) const NAME_IFACE_RX_PACKETS_TOTAL: &str = "iface_rx_packets_total";
+pub(crate) const NAME_IFACE_RX_ERRS_TOTAL: &str = "iface_rx_errs_total";
+pub(crate) const NAME_IFACE_RX_DROP_TOTAL: &str = "iface_rx_drop_total";
+pub(crate) const NAME_IFACE_TX_BYTES_TOTAL: &str = "iface_tx_bytes_total";
+pub(crate) const NAME_IFACE_TX_PACKETS_TOTAL: &str = "iface_tx_packets_total";
+pub(crate) const NAME_IFACE_TX_ERRS_TOTAL: &str = "iface_tx_errs_total";
+pub(crate) const NAME_IFACE_TX_DROP_TOTAL: &str = "iface_tx_drop_total";
+pub(crate) const NAME_DISK_READ_BYTES_TOTAL: &str = "disk_read_bytes_total";
+pub(crate) const NAME_DISK_READS_COMPLETED_TOTAL: &str = "disk_reads_completed_total";
+pub(crate) const NAME_DISK_READS_MERGED_TOTAL: &str = "disk_reads_merged_total";
+pub(crate) const NAME_DISK_READ_TIME_MS_TOTAL: &str = "disk_read_time_ms_total";
+pub(crate) const NAME_DISK_WRITE_BYTES_TOTAL: &str = "disk_write_bytes_total";
+pub(crate) const NAME_DISK_WRITES_COMPLETED_TOTAL: &str = "disk_writes_completed_total";
+pub(crate) const NAME_DISK_WRITES_MERGED_TOTAL: &str = "disk_writes_merged_total";
+pub(crate) const NAME_DISK_WRITE_TIME_MS_TOTAL: &str = "disk_write_time_ms_total";
+pub(crate) const NAME_DISK_IO_IN_PROGRESS: &str = "disk_io_in_progress";
+pub(crate) const NAME_DISK_IO_TIME_MS_TOTAL: &str = "disk_io_time_ms_total";
+pub(crate) const NAME_DISK_IO_TIME_WEIGHTED_MS_TOTAL: &str = "disk_io_time_weighted_ms_total";
+pub(crate) const NAME_DISK_DISCARD_BYTES_TOTAL: &str = "disk_discard_bytes_total";
+pub(crate) const NAME_DISK_DISCARDS_COMPLETED_TOTAL: &str = "disk_discards_completed_total";
+pub(crate) const NAME_DISK_DISCARDS_MERGED_TOTAL: &str = "disk_discards_merged_total";
+pub(crate) const NAME_DISK_DISCARD_TIME_MS_TOTAL: &str = "disk_discard_time_ms_total";
+pub(crate) const NAME_DISK_FLUSH_REQUESTS_TOTAL: &str = "disk_flush_requests_total";
+pub(crate) const NAME_DISK_FLUSH_TIME_MS_TOTAL: &str = "disk_flush_time_ms_total";
