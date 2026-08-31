@@ -2,6 +2,7 @@ pub mod cpu;
 pub mod diskstats;
 pub mod error;
 pub mod loadavg;
+pub mod meminfo;
 pub mod net;
 mod parse;
 pub mod process;

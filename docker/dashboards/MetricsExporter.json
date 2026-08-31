@@ -3,7 +3,7 @@
   "kind": "Dashboard",
   "metadata": {
     "name": "admzrgv",
-    "generation": 41,
+    "generation": 51,
     "creationTimestamp": "2026-08-31T01:37:31Z",
     "labels": {},
     "annotations": {}
@@ -359,6 +359,7 @@
               "fieldConfig": {
                 "defaults": {
                   "unit": "pps",
+                  "decimals": 0,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -502,6 +503,7 @@
               "fieldConfig": {
                 "defaults": {
                   "unit": "pps",
+                  "decimals": 0,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1729,6 +1731,7 @@
               "fieldConfig": {
                 "defaults": {
                   "unit": "pps",
+                  "decimals": 0,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1875,6 +1878,7 @@
               "fieldConfig": {
                 "defaults": {
                   "unit": "pps",
+                  "decimals": 0,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1886,6 +1890,360 @@
                   },
                   "color": {
                     "mode": "thresholds"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-21": {
+        "kind": "Panel",
+        "spec": {
+          "id": 21,
+          "title": "Memory",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "mem_total_bytes",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Total",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "mem_free_bytes",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Free",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "mem_available_bytes",
+                        "format": "time_series",
+                        "interval": "1",
+                        "legendFormat": "Avaliable",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "C",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": false
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "bytes",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "#ad46ff"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-22": {
+        "kind": "Panel",
+        "spec": {
+          "id": 22,
+          "title": "Swap",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "swap_total_bytes",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Total",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "swap_free_bytes",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Free",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": false
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "bytes",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "#ad46ff"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-23": {
+        "kind": "Panel",
+        "spec": {
+          "id": 23,
+          "title": "Hugepage",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "huge_pages_total_bytes",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Total",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "builder",
+                        "expr": "huge_pages_free_bytes",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Free",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "center",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value_and_name",
+                "wideLayout": false
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "bytes",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds",
+                    "fixedColor": "#ad46ff"
                   }
                 },
                 "overrides": []
@@ -2928,6 +3286,7 @@
               "fieldConfig": {
                 "defaults": {
                   "unit": "pps",
+                  "decimals": 0,
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -3079,6 +3438,45 @@
                       "spec": {
                         "x": 0,
                         "y": 8,
+                        "width": 10,
+                        "height": 4,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-21"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 10,
+                        "y": 8,
+                        "width": 7,
+                        "height": 4,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-22"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 17,
+                        "y": 8,
+                        "width": 7,
+                        "height": 4,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-23"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 12,
                         "width": 24,
                         "height": 7,
                         "element": {

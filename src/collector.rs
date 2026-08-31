@@ -1,6 +1,6 @@
 use crate::config::{
-    MetricsCfg, MetricsHostCfg, MetricsHostCpuCfg, MetricsHostDiskCfg, MetricsHostNetCfg,
-    MetricsHostProcessCfg,
+    MetricsCfg, MetricsHostCfg, MetricsHostCpuCfg, MetricsHostDiskCfg, MetricsHostMemCfg,
+    MetricsHostNetCfg, MetricsHostProcessCfg,
 };
 use anyhow::Result;
 use linux_metrics::{DiskFilter, HostCollector, HostCollectorCfg, NetFilter, ProcessFilter};
@@ -90,6 +90,12 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
         .maybe_exclude_devices_regex(exclude_devices_regex)
         .build();
 
+    let MetricsHostMemCfg { enable: mem_enable } = if let Some(mem_cfg) = cfg.mem.as_ref() {
+        mem_cfg
+    } else {
+        &MetricsHostMemCfg { enable: false }
+    };
+
     let collector_cfg = HostCollectorCfg::builder()
         .interval(Duration::from_secs(cfg.interval_secs))
         .process(*enable)
@@ -100,6 +106,7 @@ fn init_host_collector(cfg: &MetricsHostCfg) -> Result<HostCollector> {
         .per_core(*per_core)
         .disk(*disk_enable)
         .disk_filter(disk_filter)
+        .mem(*mem_enable)
         .build();
 
     Ok(HostCollector::new(collector_cfg))

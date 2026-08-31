@@ -212,7 +212,7 @@ mod tests {
         );
         assert_eq!(value(sda, NAME_DISK_READS_COMPLETED_TOTAL), Number::U64(10));
         assert_eq!(value(sda, NAME_DISK_READS_MERGED_TOTAL), Number::U64(2));
-        assert_eq!(value(sda, NAME_DISK_READ_TIME_MS_TOTAL), Number::F64(0.02));
+        assert_eq!(value(sda, NAME_DISK_READ_TIME_MS_TOTAL), Number::U64(20));
         assert_eq!(
             value(sda, NAME_DISK_WRITE_BYTES_TOTAL),
             Number::U64(200 * SECTOR_SIZE)
@@ -222,12 +222,12 @@ mod tests {
             Number::U64(30)
         );
         assert_eq!(value(sda, NAME_DISK_WRITES_MERGED_TOTAL), Number::U64(4));
-        assert_eq!(value(sda, NAME_DISK_WRITE_TIME_MS_TOTAL), Number::F64(0.04));
+        assert_eq!(value(sda, NAME_DISK_WRITE_TIME_MS_TOTAL), Number::U64(40));
         assert_eq!(value(sda, NAME_DISK_IO_IN_PROGRESS), Number::U64(1));
-        assert_eq!(value(sda, NAME_DISK_IO_TIME_MS_TOTAL), Number::F64(0.06));
+        assert_eq!(value(sda, NAME_DISK_IO_TIME_MS_TOTAL), Number::U64(60));
         assert_eq!(
             value(sda, NAME_DISK_IO_TIME_WEIGHTED_MS_TOTAL),
-            Number::F64(0.07)
+            Number::U64(70)
         );
         assert_eq!(
             value(sda, NAME_DISK_DISCARD_BYTES_TOTAL),
@@ -238,14 +238,8 @@ mod tests {
             Number::U64(5)
         );
         assert_eq!(value(sda, NAME_DISK_DISCARDS_MERGED_TOTAL), Number::U64(1));
-        assert_eq!(
-            value(sda, NAME_DISK_DISCARD_TIME_MS_TOTAL),
-            Number::F64(0.006)
-        );
+        assert_eq!(value(sda, NAME_DISK_DISCARD_TIME_MS_TOTAL), Number::U64(6));
         assert_eq!(value(sda, NAME_DISK_FLUSH_REQUESTS_TOTAL), Number::U64(7));
-        assert_eq!(
-            value(sda, NAME_DISK_FLUSH_TIME_MS_TOTAL),
-            Number::F64(0.008)
-        );
+        assert_eq!(value(sda, NAME_DISK_FLUSH_TIME_MS_TOTAL), Number::U64(8));
     }
 }

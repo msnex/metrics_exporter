@@ -84,6 +84,11 @@ pub struct MetricsHostDiskCfg {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct MetricsHostMemCfg {
+    pub enable: bool,
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct MetricsHostCfg {
     pub enable: bool,
     #[serde(default = "default_interval_secs")]
@@ -92,6 +97,7 @@ pub struct MetricsHostCfg {
     pub disk: Option<MetricsHostDiskCfg>,
     pub process: Option<MetricsHostProcessCfg>,
     pub net: Option<MetricsHostNetCfg>,
+    pub mem: Option<MetricsHostMemCfg>,
 }
 
 fn default_interval_secs() -> u64 {

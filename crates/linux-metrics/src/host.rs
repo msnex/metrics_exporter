@@ -23,6 +23,7 @@ mod MetricItemType {
     pub const Net: Item = 3;
     pub const Cpu: Item = 4;
     pub const Disk: Item = 5;
+    pub const Mem: Item = 6;
 }
 
 static ITEMS: &[MetricItem] = &[
@@ -299,6 +300,55 @@ static ITEMS: &[MetricItem] = &[
         unit: "ms",
         description: "Time spent flushing the block device",
     },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_MEM_TOTAL_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Total usable system memory",
+    },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_MEM_FREE_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Free system memory",
+    },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_MEM_AVAILABLE_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Estimated memory available for starting new applications",
+    },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_SWAP_TOTAL_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Total swap space",
+    },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_SWAP_FREE_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Free swap space",
+    },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_HUGE_PAGES_TOTAL_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Total hugepage memory",
+    },
+    MetricItem {
+        item_type: MetricItemType::Mem,
+        name: NAME_HUGE_PAGES_FREE_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Free hugepage memory",
+    },
 ];
 
 #[derive(Clone, bon::Builder)]
@@ -321,6 +371,8 @@ pub struct HostCollectorCfg {
     disk: bool,
     #[builder(default)]
     disk_filter: DiskFilter,
+    #[builder(default = false)]
+    mem: bool,
 }
 
 pub struct HostCollector {
@@ -362,6 +414,7 @@ impl Collector for HostCollector {
                 MetricItemType::Process if self.cfg.process => items.push(item),
                 MetricItemType::Net if self.cfg.net => items.push(item),
                 MetricItemType::Disk if self.cfg.disk => items.push(item),
+                MetricItemType::Mem if self.cfg.mem => items.push(item),
                 _ => {}
             }
         }
@@ -395,6 +448,10 @@ impl Collector for HostCollector {
 
         if self.cfg.disk {
             super::disk::collect_disk_metrics(&self.hostname, &self.cfg.disk_filter, out);
+        }
+
+        if self.cfg.mem {
+            super::mem::collect_mem_metrics(&self.hostname, out);
         }
     }
 }
@@ -550,6 +607,25 @@ mod tests {
                 .any(|value| value.name == NAME_DISK_READ_BYTES_TOTAL),
             "{} missing from host sample",
             NAME_DISK_READ_BYTES_TOTAL
+        );
+    }
+
+    #[test]
+    fn host_collect_contains_mem() {
+        let cfg = HostCollectorCfg::builder()
+            .interval(Duration::from_secs(1))
+            .mem(true)
+            .build();
+        let mut collector = HostCollector::new(cfg);
+        let mut out = Vec::new();
+        collector.collect(&mut out);
+
+        assert!(
+            out.iter()
+                .flat_map(|group| group.values.iter())
+                .any(|value| value.name == NAME_MEM_TOTAL_BYTES),
+            "{} missing from host sample",
+            NAME_MEM_TOTAL_BYTES
         );
     }
 }

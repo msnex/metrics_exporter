@@ -12,6 +12,7 @@
 mod cpu;
 mod disk;
 mod host;
+mod mem;
 mod names;
 mod net;
 mod process;

@@ -12,6 +12,13 @@ timeout = 5
 enable = true
 interval_secs = 1
 
+[metrics.host.cpu]
+enable = true
+per_core = false
+
+[metrics.host.mem]
+enable = true
+
 [metrics.host.process]
 enable = true
 # comms = []
@@ -20,10 +27,6 @@ thread = false
 [metrics.host.net]
 enable = true
 # ifaces = []
-
-[metrics.host.cpu]
-enable = true
-per_core = false
 
 [metrics.host.disk]
 enable = true
