@@ -20,7 +20,7 @@ services:
     volumes:
       - vmdata:/storage
     command:
-      - "--httpListenAddr=0.0.0.0:8428"
+      - "--httpListenAddr=127.0.0.1:8428"
       - "--storageDataPath=/storage"
     restart: unless-stopped
 

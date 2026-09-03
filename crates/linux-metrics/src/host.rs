@@ -1,10 +1,12 @@
-//! Per-process I/O metrics (`process_io_*`) with a single pass over `/proc`.
+//! Per-process I/O, memory and task metrics (`process_io_*`, `process_mem_*`,
+//! `process_fd_size`, `process_threads`, `process_ctxt_switches_*`) with a
+//! single pass over `/proc`.
 //!
 //! Each sampling cycle enumerates the process table once and, for every
-//! process, reads each `/proc/<pid>/` file at most once: `comm` and `io`
-//! through the `procfs` atomic layer. All values of one process share a
-//! single `SampleGroup` (attributes `hostname` + `pid` + `comm`), so the `comm` string is
-//! built exactly once per process per cycle.
+//! process, reads each `/proc/<pid>/` file at most once: `comm`, `io` and
+//! `status` through the `procfs` atomic layer. All values of one process
+//! share a single `SampleGroup` (attributes `host` + `pid` + `comm`),
+//! so the `comm` string is built exactly once per process per cycle.
 
 use crate::names::*;
 use crate::{DiskFilter, NetFilter, ProcessFilter};
@@ -124,6 +126,76 @@ static ITEMS: &[MetricItem] = &[
         kind: ItemKind::CounterU64,
         unit: "{operations}",
         description: "Number of write(2) syscalls for the process",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_MEM_VIRT_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Process virtual memory size (VmSize)",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_MEM_RSS_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Process resident memory size (VmRSS)",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_MEM_HWM_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Historical peak resident memory of the process (VmHWM)",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_MEM_SHARED_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Shared resident memory of the process, RssFile + RssShmem",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_MEM_SWAP_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Swapped-out memory of the process (VmSwap)",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_MEM_HUGETLB_BYTES,
+        kind: ItemKind::GaugeU64,
+        unit: "By",
+        description: "Huge pages resident memory of the process (HugetlbPages)",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_FD_SIZE,
+        kind: ItemKind::GaugeU64,
+        unit: "{slots}",
+        description: "File descriptor slots currently allocated to the process",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_THREADS,
+        kind: ItemKind::GaugeU64,
+        unit: "{threads}",
+        description: "Number of threads in the process",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_CTXT_SWITCHES_VOLUNTARY_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "{switches}",
+        description: "Voluntary context switches of the process",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_CTXT_SWITCHES_NONVOLUNTARY_TOTAL,
+        kind: ItemKind::CounterU64,
+        unit: "{switches}",
+        description: "Non-voluntary context switches of the process",
     },
     MetricItem {
         item_type: MetricItemType::Net,
@@ -389,7 +461,7 @@ impl HostCollector {
             .into();
         Self {
             cfg,
-            hostname: KeyValue::new("hostname", hostname),
+            hostname: KeyValue::new("host", hostname),
         }
     }
 }
@@ -513,7 +585,7 @@ mod tests {
 
     #[test]
     fn collect_loadavg_metrics_emits_all_fields() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let loadavg = LoadAvg {
             load1: 0.25,
             load5: 0.5,
@@ -531,7 +603,7 @@ mod tests {
             group
                 .attrs
                 .iter()
-                .any(|kv| { kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host" })
+                .any(|kv| { kv.key.as_str() == "host" && kv.value.as_str() == "test-host" })
         );
         assert_eq!(value(group, NAME_LOADAVG_1M), Number::F64(0.25));
         assert_eq!(value(group, NAME_LOADAVG_5M), Number::F64(0.5));
@@ -626,6 +698,38 @@ mod tests {
                 .any(|value| value.name == NAME_MEM_TOTAL_BYTES),
             "{} missing from host sample",
             NAME_MEM_TOTAL_BYTES
+        );
+    }
+
+    #[test]
+    fn host_collect_contains_process_mem() {
+        let cfg = HostCollectorCfg::builder()
+            .interval(Duration::from_secs(1))
+            .process(true)
+            .build();
+        let mut collector = HostCollector::new(cfg);
+        let mut out = Vec::new();
+        collector.collect(&mut out);
+
+        // The collector process itself must appear with a `pid` attribute
+        // and byte-converted memory samples.
+        assert!(
+            out.iter().any(|group| {
+                group.attrs.iter().any(|kv| {
+                    kv.key.as_str() == "pid" && kv.value.as_str() == std::process::id().to_string()
+                }) && group
+                    .values
+                    .iter()
+                    .any(|value| value.name == NAME_PROCESS_MEM_RSS_BYTES)
+            }),
+            "own process missing memory samples from process collector"
+        );
+        assert!(
+            out.iter()
+                .flat_map(|group| group.values.iter())
+                .any(|value| value.name == NAME_PROCESS_MEM_VIRT_BYTES),
+            "{} missing from host sample",
+            NAME_PROCESS_MEM_VIRT_BYTES
         );
     }
 }

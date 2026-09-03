@@ -1,7 +1,7 @@
 //! Block-device I/O metrics (`disk_*`) from `/proc/diskstats`.
 //!
 //! Each sampling cycle reads `/proc/diskstats` once and emits one sample
-//! group per collected device, with the attributes `hostname` + `device`.
+//! group per collected device, with the attributes `host` + `device`.
 //! Sector counters are converted to bytes (512-byte units) and times from
 //! milliseconds to seconds, matching the conventions used for the other
 //! metric families.
@@ -179,7 +179,7 @@ mod tests {
 
     #[test]
     fn collect_all_disk_devices() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let filter = DiskFilter::builder().build();
 
         let mut out = Vec::new();
@@ -190,7 +190,7 @@ mod tests {
 
     #[test]
     fn collect_excluded_disk_devices() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let exclude_regex = RegexSet::new(&["sda\\d+", "nvme0n1p\\d+"]).unwrap();
         let filter = DiskFilter::builder()
             .exclude_devices_regex(exclude_regex)
@@ -204,7 +204,7 @@ mod tests {
         assert!(
             sda.attrs
                 .iter()
-                .any(|kv| kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host")
+                .any(|kv| kv.key.as_str() == "host" && kv.value.as_str() == "test-host")
         );
         assert_eq!(
             value(sda, NAME_DISK_READ_BYTES_TOTAL),

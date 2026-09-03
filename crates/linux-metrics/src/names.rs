@@ -18,6 +18,18 @@ pub(crate) const NAME_PROCESS_IO_CANCELLED_WRITE_BYTES_TOTAL: &str =
     "process_io_cancelled_write_bytes_total";
 pub(crate) const NAME_PROCESS_IO_SYSCR_TOTAL: &str = "process_io_syscr_total";
 pub(crate) const NAME_PROCESS_IO_SYSCW_TOTAL: &str = "process_io_syscw_total";
+pub(crate) const NAME_PROCESS_MEM_VIRT_BYTES: &str = "process_mem_virt_bytes";
+pub(crate) const NAME_PROCESS_MEM_RSS_BYTES: &str = "process_mem_rss_bytes";
+pub(crate) const NAME_PROCESS_MEM_HWM_BYTES: &str = "process_mem_hwm_bytes";
+pub(crate) const NAME_PROCESS_MEM_SHARED_BYTES: &str = "process_mem_shared_bytes";
+pub(crate) const NAME_PROCESS_MEM_SWAP_BYTES: &str = "process_mem_swap_bytes";
+pub(crate) const NAME_PROCESS_MEM_HUGETLB_BYTES: &str = "process_mem_hugetlb_bytes";
+pub(crate) const NAME_PROCESS_FD_SIZE: &str = "process_fd_size";
+pub(crate) const NAME_PROCESS_THREADS: &str = "process_threads";
+pub(crate) const NAME_PROCESS_CTXT_SWITCHES_VOLUNTARY_TOTAL: &str =
+    "process_ctxt_switches_voluntary_total";
+pub(crate) const NAME_PROCESS_CTXT_SWITCHES_NONVOLUNTARY_TOTAL: &str =
+    "process_ctxt_switches_nonvoluntary_total";
 pub(crate) const NAME_IFACE_RX_BYTES_TOTAL: &str = "iface_rx_bytes_total";
 pub(crate) const NAME_IFACE_RX_PACKETS_TOTAL: &str = "iface_rx_packets_total";
 pub(crate) const NAME_IFACE_RX_ERRS_TOTAL: &str = "iface_rx_errs_total";
