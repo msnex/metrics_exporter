@@ -5,10 +5,12 @@ use std::path::Path;
 use std::path::PathBuf;
 
 mod io;
+mod status;
 mod task;
 mod util;
 
 pub use io::Io;
+pub use status::Status;
 
 pub struct Process {
     pid: i32,
@@ -43,6 +45,12 @@ impl Process {
     #[inline]
     pub fn io(&self) -> ProcResult<Io> {
         let path = self.root.join("io");
+        FileRead::from_file(&path)
+    }
+
+    #[inline]
+    pub fn status(&self) -> ProcResult<Status> {
+        let path = self.root.join("status");
         FileRead::from_file(&path)
     }
 

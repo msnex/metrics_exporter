@@ -1,18 +1,16 @@
 //! System-wide memory, swap and huge-page metrics from `/proc/meminfo`.
 //!
-//! One sample group per snapshot with the `hostname` attribute. Raw
+//! One sample group per snapshot with the `host` attribute. Raw
 //! kilobyte values are converted to bytes in this layer; huge-page bytes
 //! are computed from the page count and page size rather than emitted as
 //! raw page counts.
 
+use crate::BYTES_PER_KB;
 use crate::names::*;
 use metrics_framework::{Number, SampleGroup};
 use opentelemetry::KeyValue;
 use procfs::meminfo::MemInfo;
 use smallvec::smallvec;
-
-/// Bytes per kilobyte as reported by `/proc/meminfo`.
-const BYTES_PER_KB: u64 = 1024;
 
 /// Read `/proc/meminfo` and append host memory samples.
 pub fn collect_mem_metrics(hostname: &KeyValue, out: &mut Vec<SampleGroup>) {
@@ -76,7 +74,7 @@ mod tests {
 
     #[test]
     fn collect_mem_values_converts_and_computes_bytes() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let mem = MemInfo {
             mem_total_kb: 16_000,
             mem_free_kb: 4_000,
@@ -96,7 +94,7 @@ mod tests {
             group
                 .attrs
                 .iter()
-                .any(|kv| kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host")
+                .any(|kv| kv.key.as_str() == "host" && kv.value.as_str() == "test-host")
         );
         assert_eq!(
             value(group, NAME_MEM_TOTAL_BYTES),

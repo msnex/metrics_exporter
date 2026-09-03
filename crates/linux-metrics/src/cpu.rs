@@ -1,7 +1,7 @@
 //! System-wide and per-core CPU time metrics (`cpu_seconds_total`).
 //!
 //! Each sampling cycle reads `/proc/stat` once and emits one sample group
-//! per (cpu, mode) pair, with the attributes `hostname` + `cpu` + `mode`.
+//! per (cpu, mode) pair, with the attributes `host` + `cpu` + `mode`.
 //! Kernel ticks are converted to seconds using `USER_HZ = 100`.
 
 use crate::names::NAME_CPU_SECONDS_TOTAL;
@@ -131,7 +131,7 @@ mod tests {
 
     #[test]
     fn collect_cpu_times_emits_aggregate_modes() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let mut out = Vec::new();
         collect_cpu_times(&hostname, false, sample_cpus(), &mut out);
 
@@ -143,7 +143,7 @@ mod tests {
         assert!(
             user.attrs
                 .iter()
-                .any(|kv| kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host")
+                .any(|kv| kv.key.as_str() == "host" && kv.value.as_str() == "test-host")
         );
         assert_eq!(
             value(group(&out, "cpu", "system"), NAME_CPU_SECONDS_TOTAL),
@@ -161,7 +161,7 @@ mod tests {
 
     #[test]
     fn collect_cpu_times_emits_per_core_when_enabled() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let mut out = Vec::new();
         collect_cpu_times(&hostname, true, sample_cpus(), &mut out);
 

@@ -97,7 +97,7 @@ mod tests {
 
     #[test]
     fn collect_net_devices_emits_core_metrics() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let filter = NetFilter::default();
         let mut out = Vec::new();
         collect_net_devices(&hostname, &filter, sample_interfaces(), &mut out);
@@ -116,7 +116,7 @@ mod tests {
         assert!(
             lo.attrs
                 .iter()
-                .any(|kv| { kv.key.as_str() == "hostname" && kv.value.as_str() == "test-host" })
+                .any(|kv| { kv.key.as_str() == "host" && kv.value.as_str() == "test-host" })
         );
         assert_eq!(value(lo, NAME_IFACE_RX_BYTES_TOTAL), Number::U64(100));
         assert_eq!(value(lo, NAME_IFACE_RX_PACKETS_TOTAL), Number::U64(200));
@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn collect_net_devices_filters_exact_ifaces() {
-        let hostname = KeyValue::new("hostname", Arc::from("test-host"));
+        let hostname = KeyValue::new("host", Arc::from("test-host"));
         let mut ifaces = HashSet::new();
         ifaces.insert("eth0".to_string());
         let filter = NetFilter::builder().maybe_ifaces(Some(ifaces)).build();

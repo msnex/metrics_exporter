@@ -24,6 +24,14 @@ pub fn parse_u32(token: Option<&[u8]>) -> ProcResult<u32> {
     lexical::parse(token.unwrap_or_default()).map_err(Into::into)
 }
 
+/// Strictly parse a token as an `i32`.
+///
+/// A missing token parses as empty input and fails with a lexical error, so
+/// malformed snapshots are never reported as partial data.
+pub fn parse_i32(token: Option<&[u8]>) -> ProcResult<i32> {
+    lexical::parse(token.unwrap_or_default()).map_err(Into::into)
+}
+
 /// Strictly parse a token as an `f64`.
 ///
 /// A missing token parses as empty input and fails with a lexical error, so
