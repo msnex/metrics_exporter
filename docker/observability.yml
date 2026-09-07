@@ -7,8 +7,9 @@ services:
     network_mode: host
     depends_on:
       - victoriametrics
-    # environment:
+    environment:
     #   - GF_PLUGINS_PREINSTALL=victoriametrics-metrics-datasource@0.25.2
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
     volumes:
       - grafana_storage:/var/lib/grafana
     restart: unless-stopped

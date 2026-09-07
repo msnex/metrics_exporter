@@ -3,7 +3,7 @@
   "kind": "Dashboard",
   "metadata": {
     "name": "admzrgv",
-    "generation": 55,
+    "generation": 58,
     "creationTimestamp": "2026-08-31T01:37:31Z",
     "labels": {},
     "annotations": {}
@@ -2469,7 +2469,9 @@
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "interval": "1s"
+              }
             }
           },
           "vizConfig": {
@@ -2832,6 +2834,99 @@
                       {
                         "value": 0,
                         "color": "green"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  },
+                  "noValue": "0"
+                },
+                "overrides": []
+              }
+            }
+          },
+          "transparent": true
+        }
+      },
+      "panel-29": {
+        "kind": "Panel",
+        "spec": {
+          "id": 29,
+          "title": "CPU Usage",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "victoriametrics-metrics-datasource",
+                      "version": "v0",
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "(rate(process_cpu_user_seconds_total{comm=\"grafana\", thread=\"false\"}[$__interval]) + rate(process_cpu_system_seconds_total{comm=\"grafana\", thread=\"false\"}[$__interval])) * 100",
+                        "format": "time_series",
+                        "interval": "1s",
+                        "legendFormat": "Usage",
+                        "range": true
+                      },
+                      "labels": {
+                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
+                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "1s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.0",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "value",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "decimals": 2,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
                       }
                     ]
                   },
@@ -4329,7 +4424,7 @@
                                 "spec": {
                                   "x": 0,
                                   "y": 0,
-                                  "width": 3,
+                                  "width": 4,
                                   "height": 4,
                                   "element": {
                                     "kind": "ElementReference",
@@ -4340,9 +4435,35 @@
                               {
                                 "kind": "GridLayoutItem",
                                 "spec": {
-                                  "x": 3,
+                                  "x": 4,
                                   "y": 0,
-                                  "width": 3,
+                                  "width": 4,
+                                  "height": 4,
+                                  "element": {
+                                    "kind": "ElementReference",
+                                    "name": "panel-29"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "GridLayoutItem",
+                                "spec": {
+                                  "x": 8,
+                                  "y": 0,
+                                  "width": 8,
+                                  "height": 4,
+                                  "element": {
+                                    "kind": "ElementReference",
+                                    "name": "panel-27"
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "GridLayoutItem",
+                                "spec": {
+                                  "x": 16,
+                                  "y": 0,
+                                  "width": 4,
                                   "height": 4,
                                   "element": {
                                     "kind": "ElementReference",
@@ -4353,26 +4474,13 @@
                               {
                                 "kind": "GridLayoutItem",
                                 "spec": {
-                                  "x": 6,
+                                  "x": 20,
                                   "y": 0,
-                                  "width": 3,
+                                  "width": 4,
                                   "height": 4,
                                   "element": {
                                     "kind": "ElementReference",
                                     "name": "panel-25"
-                                  }
-                                }
-                              },
-                              {
-                                "kind": "GridLayoutItem",
-                                "spec": {
-                                  "x": 9,
-                                  "y": 0,
-                                  "width": 7,
-                                  "height": 4,
-                                  "element": {
-                                    "kind": "ElementReference",
-                                    "name": "panel-27"
                                   }
                                 }
                               },

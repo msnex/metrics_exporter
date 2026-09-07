@@ -4,14 +4,12 @@
 //! per (cpu, mode) pair, with the attributes `host` + `cpu` + `mode`.
 //! Kernel ticks are converted to seconds using `USER_HZ = 100`.
 
+use crate::USER_HZ;
 use crate::names::NAME_CPU_SECONDS_TOTAL;
 use metrics_framework::{Number, SampleGroup};
 use opentelemetry::KeyValue;
 use procfs::cpu::CpuTimes;
 use smallvec::smallvec;
-
-/// Ticks per second for `/proc/stat` CPU times (USER_HZ on Linux).
-const USER_HZ: f64 = 100.0;
 
 /// CPU modes, in the order `/proc/stat` reports them.
 const MODES: [&str; 10] = [

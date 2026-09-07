@@ -18,6 +18,8 @@ pub(crate) const NAME_PROCESS_IO_CANCELLED_WRITE_BYTES_TOTAL: &str =
     "process_io_cancelled_write_bytes_total";
 pub(crate) const NAME_PROCESS_IO_SYSCR_TOTAL: &str = "process_io_syscr_total";
 pub(crate) const NAME_PROCESS_IO_SYSCW_TOTAL: &str = "process_io_syscw_total";
+pub(crate) const NAME_PROCESS_CPU_USER_SECONDS_TOTAL: &str = "process_cpu_user_seconds_total";
+pub(crate) const NAME_PROCESS_CPU_SYSTEM_SECONDS_TOTAL: &str = "process_cpu_system_seconds_total";
 pub(crate) const NAME_PROCESS_MEM_VIRT_BYTES: &str = "process_mem_virt_bytes";
 pub(crate) const NAME_PROCESS_MEM_RSS_BYTES: &str = "process_mem_rss_bytes";
 pub(crate) const NAME_PROCESS_MEM_HWM_BYTES: &str = "process_mem_hwm_bytes";

@@ -198,6 +198,20 @@ static ITEMS: &[MetricItem] = &[
         description: "Non-voluntary context switches of the process",
     },
     MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_CPU_USER_SECONDS_TOTAL,
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "User mode CPU time of the process",
+    },
+    MetricItem {
+        item_type: MetricItemType::Process,
+        name: NAME_PROCESS_CPU_SYSTEM_SECONDS_TOTAL,
+        kind: ItemKind::CounterF64,
+        unit: "s",
+        description: "System mode CPU time of the process",
+    },
+    MetricItem {
         item_type: MetricItemType::Net,
         name: NAME_IFACE_RX_BYTES_TOTAL,
         kind: ItemKind::CounterU64,
@@ -730,6 +744,23 @@ mod tests {
                 .any(|value| value.name == NAME_PROCESS_MEM_VIRT_BYTES),
             "{} missing from host sample",
             NAME_PROCESS_MEM_VIRT_BYTES
+        );
+
+        // The own process group must also carry the cumulative CPU time
+        // counters converted to seconds.
+        assert!(
+            out.iter().any(|group| {
+                group.attrs.iter().any(|kv| {
+                    kv.key.as_str() == "pid" && kv.value.as_str() == std::process::id().to_string()
+                }) && group.values.iter().any(|value| {
+                    value.name == NAME_PROCESS_CPU_USER_SECONDS_TOTAL
+                        && matches!(value.value, Number::F64(v) if v >= 0.0)
+                }) && group
+                    .values
+                    .iter()
+                    .any(|value| value.name == NAME_PROCESS_CPU_SYSTEM_SECONDS_TOTAL)
+            }),
+            "own process missing CPU time samples from process collector"
         );
     }
 }

@@ -12,6 +12,9 @@
 /// Bytes per kilobyte as reported by the proc filesystem.
 pub(crate) const BYTES_PER_KB: u64 = 1024;
 
+/// Kernel clock ticks per second for CPU times (USER_HZ on Linux).
+pub(crate) const USER_HZ: f64 = 100.0;
+
 mod cpu;
 mod disk;
 mod host;

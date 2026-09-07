@@ -5,11 +5,13 @@ use std::path::Path;
 use std::path::PathBuf;
 
 mod io;
+mod stat;
 mod status;
 mod task;
 mod util;
 
 pub use io::Io;
+pub use stat::Stat;
 pub use status::Status;
 
 pub struct Process {
@@ -51,6 +53,18 @@ impl Process {
     #[inline]
     pub fn status(&self) -> ProcResult<Status> {
         let path = self.root.join("status");
+        FileRead::from_file(&path)
+    }
+
+    /// Read the CPU time fields from `/proc/<pid>/stat`.
+    ///
+    /// One file read yields the task's user and system scheduling time in
+    /// kernel USER_HZ ticks. Process and thread rows share the parser: for
+    /// a `Process` rooted under `/proc/<pid>/task/`, this reads the
+    /// thread's own `stat` file.
+    #[inline]
+    pub fn stat(&self) -> ProcResult<Stat> {
+        let path = self.root.join("stat");
         FileRead::from_file(&path)
     }
 

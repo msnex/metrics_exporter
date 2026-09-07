@@ -1,10 +1,11 @@
-use crate::BYTES_PER_KB;
 use crate::names::*;
+use crate::{BYTES_PER_KB, USER_HZ};
 use metrics_framework::Number;
 use metrics_framework::SampleGroup;
 use opentelemetry::KeyValue;
 use procfs::process::Io;
 use procfs::process::Process;
+use procfs::process::Stat;
 use procfs::process::Status;
 use regex::RegexSet;
 use smallvec::smallvec;
@@ -72,6 +73,15 @@ fn collect_process(
             }
             Err(err) => {
                 trace!("read status for pid {} failed: {}", process.pid(), err);
+            }
+        }
+
+        match process.stat() {
+            Ok(stat) => {
+                emitted |= collect_cpu_time_metrics(&mut group, &stat);
+            }
+            Err(err) => {
+                trace!("read stat for pid {} failed: {}", process.pid(), err);
             }
         }
 
@@ -148,6 +158,27 @@ fn collect_status_metrics(group: &mut SampleGroup, status: &Status) -> bool {
     group.push(
         NAME_PROCESS_CTXT_SWITCHES_NONVOLUNTARY_TOTAL,
         Number::U64(status.nonvoluntary_ctxt_switches),
+    );
+    true
+}
+
+/// Append the CPU time counters of one `/proc/<pid>/stat` snapshot to
+/// `group`, converting kernel USER_HZ ticks to seconds.
+///
+/// Emits `process_cpu_user_seconds_total` and
+/// `process_cpu_system_seconds_total` (stat fields 14/15); Grafana-side
+/// `rate(process_cpu_{user,system}_seconds_total[window]) * 100` sums to
+/// the per-core CPU percentage, htop `%CPU` style. Child process times
+/// (cutime/cstime) are not included. Returns whether any sample was
+/// appended (a successfully parsed stat always does).
+fn collect_cpu_time_metrics(group: &mut SampleGroup, stat: &Stat) -> bool {
+    group.push(
+        NAME_PROCESS_CPU_USER_SECONDS_TOTAL,
+        Number::F64(stat.utime_ticks as f64 / USER_HZ),
+    );
+    group.push(
+        NAME_PROCESS_CPU_SYSTEM_SECONDS_TOTAL,
+        Number::F64(stat.stime_ticks as f64 / USER_HZ),
     );
     true
 }
@@ -254,6 +285,46 @@ mod tests {
         assert_eq!(
             value(&group, NAME_PROCESS_CTXT_SWITCHES_VOLUNTARY_TOTAL),
             Number::U64(0)
+        );
+    }
+
+    #[test]
+    fn collect_cpu_time_metrics_converts_ticks_to_seconds() {
+        use procfs::process::Stat;
+
+        let stat = Stat {
+            utime_ticks: 150,
+            stime_ticks: 250,
+        };
+        let mut group = SampleGroup::with_attrs(smallvec![]);
+        assert!(collect_cpu_time_metrics(&mut group, &stat));
+
+        assert_eq!(
+            value(&group, NAME_PROCESS_CPU_USER_SECONDS_TOTAL),
+            Number::F64(1.5)
+        );
+        assert_eq!(
+            value(&group, NAME_PROCESS_CPU_SYSTEM_SECONDS_TOTAL),
+            Number::F64(2.5)
+        );
+        assert_eq!(group.values.len(), 2);
+    }
+
+    #[test]
+    fn collect_cpu_time_metrics_handles_zero_ticks() {
+        use procfs::process::Stat;
+
+        let stat = Stat::default();
+        let mut group = SampleGroup::with_attrs(smallvec![]);
+        assert!(collect_cpu_time_metrics(&mut group, &stat));
+
+        assert_eq!(
+            value(&group, NAME_PROCESS_CPU_USER_SECONDS_TOTAL),
+            Number::F64(0.0)
+        );
+        assert_eq!(
+            value(&group, NAME_PROCESS_CPU_SYSTEM_SECONDS_TOTAL),
+            Number::F64(0.0)
         );
     }
 
