@@ -1,0 +1,45 @@
+name: observability
+
+services:
+  grafana:
+    image: localhost/grafana-custom:13.2
+    container_name: grafana
+    network_mode: host
+    depends_on:
+      - victoriametrics
+    environment:
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
+      - GF_ANALYTICS_ENABLED=false
+      # - GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false
+      # - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+      - GF_ANALYTICS_FEEDBACK_LINKS_ENABLED=false
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_NEWS_NEWS_FEED_ENABLED=false
+      # - GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false
+      # - GF_PLUGINS_PLUGIN_ADMIN_EXTERNAL_MANAGE_ENABLED=false
+      # - GF_PLUGINS_PREINSTALL_AUTO_UPDATE=false
+      # - GF_PLUGINS_PUBLIC_KEY_RETRIEVAL_DISABLED=true
+      # - GF_PLUGINS_PUBLIC_KEY_RETRIEVAL_ON_STARTUP=false
+      - GF_REPORTING_ENABLED=false
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_SNAPSHOTS_ENABLED=false
+      - GF_SNAPSHOTS_EXTERNAL_ENABLED=false
+    volumes:
+      - grafana_storage:/var/lib/grafana
+      - ./provisioning:/etc/grafana/provisioning:ro
+    restart: unless-stopped
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.150.0
+    container_name: victoriametrics
+    network_mode: host
+    volumes:
+      - vmdata:/storage
+    command:
+      - "--httpListenAddr=127.0.0.1:8428"
+      - "--storageDataPath=/storage"
+    restart: unless-stopped
+
+volumes:
+  grafana_storage: {}
+  vmdata: {}

@@ -1,0 +1,41 @@
+[Unit]
+Description=Grafana dashboard UI (offline image, pre-installed plugins)
+Wants=network-online.target
+After=network-online.target
+Wants=victoriametrics.service
+After=victoriametrics.service
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=simple
+ExecStartPre=-/usr/bin/podman volume create grafana_storage
+ExecStart=/usr/bin/podman run --name grafana --replace --rm --network=host \
+    -v grafana_storage:/var/lib/grafana \
+    -v /etc/grafana/provisioning:/etc/grafana/provisioning:ro \
+    -v /etc/grafana/offline-resolv.conf:/etc/resolv.conf:ro \
+    -v /etc/grafana/offline-hosts:/etc/hosts:ro \
+    -e GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s \
+    -e GF_ANALYTICS_ENABLED=false \
+    -e GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES=false \
+    -e GF_ANALYTICS_CHECK_FOR_UPDATES=false \
+    -e GF_ANALYTICS_FEEDBACK_LINKS_ENABLED=false \
+    -e GF_ANALYTICS_REPORTING_ENABLED=false \
+    -e GF_NEWS_NEWS_FEED_ENABLED=false \
+    -e GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false \
+    -e GF_PLUGINS_PLUGIN_ADMIN_EXTERNAL_MANAGE_ENABLED=false \
+    -e GF_PLUGINS_PREINSTALL_AUTO_UPDATE=false \
+    -e GF_PLUGINS_PUBLIC_KEY_RETRIEVAL_DISABLED=true \
+    -e GF_PLUGINS_PUBLIC_KEY_RETRIEVAL_ON_STARTUP=false \
+    -e GF_REPORTING_ENABLED=false \
+    -e GF_SECURITY_DISABLE_GRAVATAR=true \
+    -e GF_SNAPSHOTS_ENABLED=false \
+    -e GF_SNAPSHOTS_EXTERNAL_ENABLED=false \
+    localhost/grafana-custom:13.2
+ExecStop=/usr/bin/podman stop --time 10 --ignore grafana
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=300
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target

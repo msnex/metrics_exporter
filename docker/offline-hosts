@@ -1,0 +1,40 @@
+# Offline network hardening for the grafana container: known outbound
+# domains are pinned to 127.0.0.1 so connections are refused locally.
+#
+# This is a second line of defence behind offline-resolv.conf (which
+# already makes every DNS lookup fail); it stays effective if the
+# resolver is bypassed or reconfigured. /etc/hosts supports no wildcards,
+# so the well-known grafana/plugin/telemetry/gravatar/snapshot domains
+# and their subdomains are listed explicitly.
+#
+# Mounted read-only over the container's /etc/hosts by
+# docker/systemd/grafana.service. Install on the host at:
+#   /etc/grafana/offline-hosts
+#
+# Keep the loopback basics; add or remove entries as needed.
+127.0.0.1	localhost
+::1		localhost ip6-localhost ip6-loopback
+
+# Grafana update/plugin/news/analytics endpoints.
+127.0.0.1	grafana.com
+127.0.0.1	www.grafana.com
+127.0.0.1	api.grafana.com
+127.0.0.1	dl.grafana.com
+127.0.0.1	grafana.net
+127.0.0.1	grafana.org
+127.0.0.1	stats.grafana.org
+
+# Snapshot sharing (legacy raintank backend).
+127.0.0.1	snapshots.raintank.io
+127.0.0.1	raintank.io
+
+# Gravatar avatars.
+127.0.0.1	gravatar.com
+127.0.0.1	www.gravatar.com
+127.0.0.1	secure.gravatar.com
+
+# Source/plugin distribution hosts.
+127.0.0.1	github.com
+127.0.0.1	raw.githubusercontent.com
+127.0.0.1	objects.githubusercontent.com
+127.0.0.1	codeload.github.com

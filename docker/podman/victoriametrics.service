@@ -1,0 +1,18 @@
+[Unit]
+Description=VictoriaMetrics time-series database (metrics_exporter backend)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=simple
+ExecStartPre=-/usr/bin/podman volume create vmdata
+ExecStart=/usr/bin/podman run --name victoriametrics --replace --rm --network=host -v vmdata:/storage docker.io/victoriametrics/victoria-metrics:v1.150.0 --httpListenAddr=127.0.0.1:8428 --storageDataPath=/storage
+ExecStop=/usr/bin/podman stop --time 10 --ignore victoriametrics
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=300
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target
