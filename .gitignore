@@ -21,3 +21,4 @@ target
 #.idea/
 
 *.tar
+/package/*/metrics_exporter

@@ -1,0 +1,16 @@
+[Unit]
+Description=Metrics exporter
+Wants=network-online.target
+After=network-online.target
+# After=victoriametrics.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/metrics_exporter -c /etc/metrics_exporter/metrics_exporter.toml
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=60
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
