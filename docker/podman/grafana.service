@@ -21,6 +21,7 @@ ExecStart=/usr/bin/podman run --name grafana --replace --rm --network=host \
     -e GF_ANALYTICS_FEEDBACK_LINKS_ENABLED=false \
     -e GF_ANALYTICS_REPORTING_ENABLED=false \
     -e GF_NEWS_NEWS_FEED_ENABLED=false \
+    -e GF_PLUGINS_DISABLE_PLUGINS=grafana-pyroscope-datasource,opentsdb,stackdriver,zipkin,loki,prometheus,tempo,elasticsearch,grafana-lokiexplore-app,grafana-pyroscope-app,mssql,mysql,grafana-advisor-app,grafana-metricsdrilldown-app,influxdb,grafana-exploretraces-app,grafana-postgresql-datasource,jaeger \
     -e GF_PLUGINS_PLUGIN_ADMIN_ENABLED=false \
     -e GF_PLUGINS_PLUGIN_ADMIN_EXTERNAL_MANAGE_ENABLED=false \
     -e GF_PLUGINS_PREINSTALL_AUTO_UPDATE=false \
