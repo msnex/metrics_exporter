@@ -3,8 +3,8 @@
   "kind": "Dashboard",
   "metadata": {
     "name": "admzrgv",
-    "generation": 58,
-    "creationTimestamp": "2026-08-31T01:37:31Z",
+    "generation": 2,
+    "creationTimestamp": "2026-09-11T13:13:17Z",
     "labels": {},
     "annotations": {}
   },
@@ -55,10 +55,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -176,10 +172,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -296,10 +288,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}-error",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -320,10 +308,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}-drop",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -440,10 +424,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}-error",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -464,10 +444,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}-drop",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -585,10 +561,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -609,10 +581,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -633,10 +601,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-discard",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -657,10 +621,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-flush",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "D",
@@ -778,10 +738,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -802,10 +758,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -826,10 +778,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-discard",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -948,10 +896,6 @@
                         "legendFormat": "{{device}}-read",
                         "range": true,
                         "trace": 1
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -972,10 +916,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -996,10 +936,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-discard",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -1117,10 +1053,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1141,10 +1073,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -1165,10 +1093,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-discard",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -1189,10 +1113,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-flush",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "D",
@@ -1311,10 +1231,6 @@
                         "legendFormat": "{{device}}",
                         "range": true,
                         "trace": 1
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1433,10 +1349,6 @@
                         "legendFormat": "{{device}}",
                         "range": true,
                         "trace": 1
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1554,10 +1466,6 @@
                         "interval": "1s",
                         "legendFormat": "Read",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1578,10 +1486,6 @@
                         "interval": "1s",
                         "legendFormat": "Write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -1602,10 +1506,6 @@
                         "interval": "1s",
                         "legendFormat": "Total",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -1691,10 +1591,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1813,10 +1709,6 @@
                         "interval": "1s",
                         "legendFormat": "RX",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1837,10 +1729,6 @@
                         "interval": "1s",
                         "legendFormat": "TX",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -1925,10 +1813,6 @@
                         "interval": "1s",
                         "legendFormat": "Total",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -1949,10 +1833,6 @@
                         "interval": "1s",
                         "legendFormat": "Free",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -1973,10 +1853,6 @@
                         "interval": "1",
                         "legendFormat": "Avaliable",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -2059,10 +1935,6 @@
                         "interval": "1s",
                         "legendFormat": "Total",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2083,10 +1955,6 @@
                         "interval": "1s",
                         "legendFormat": "Free",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -2169,10 +2037,6 @@
                         "interval": "1s",
                         "legendFormat": "Total",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2193,10 +2057,6 @@
                         "interval": "1s",
                         "legendFormat": "Free",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -2278,10 +2138,6 @@
                         "format": "time_series",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2367,10 +2223,6 @@
                         "format": "time_series",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2457,10 +2309,6 @@
                         "interval": "1s",
                         "legendFormat": "Usage",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2550,10 +2398,6 @@
                         "interval": "1s",
                         "legendFormat": "Voluntary",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2574,10 +2418,6 @@
                         "interval": "1s",
                         "legendFormat": "NonVoluntary",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -2666,10 +2506,6 @@
                         "interval": "1s",
                         "legendFormat": "Virt",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "D",
@@ -2690,10 +2526,6 @@
                         "interval": "1s",
                         "legendFormat": "Rss",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2714,10 +2546,6 @@
                         "interval": "1s",
                         "legendFormat": "HWM",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -2738,10 +2566,6 @@
                         "interval": "1s",
                         "legendFormat": "Shared",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -2762,10 +2586,6 @@
                         "interval": "1s",
                         "legendFormat": "Swap",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "E",
@@ -2786,10 +2606,6 @@
                         "interval": "1s",
                         "legendFormat": "HugeTLB",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "F",
@@ -2869,15 +2685,11 @@
                       "version": "v0",
                       "spec": {
                         "editorMode": "code",
-                        "expr": "(rate(process_cpu_user_seconds_total{comm=\"grafana\", thread=\"false\"}[$__interval]) + rate(process_cpu_system_seconds_total{comm=\"grafana\", thread=\"false\"}[$__interval])) * 100",
+                        "expr": "(rate(process_cpu_user_seconds_total{comm=\"pi\", thread=\"false\"}[$__interval]) + rate(process_cpu_system_seconds_total{comm=\"pi\", thread=\"false\"}[$__interval])) * 100",
                         "format": "time_series",
                         "interval": "1s",
                         "legendFormat": "Usage",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -2966,10 +2778,6 @@
                         "format": "time_series",
                         "legendFormat": "__auto",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -3053,10 +2861,6 @@
                         "format": "time_series",
                         "legendFormat": "1m",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -3076,10 +2880,6 @@
                         "format": "time_series",
                         "legendFormat": "5m",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -3099,10 +2899,6 @@
                         "format": "time_series",
                         "legendFormat": "15m",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -3206,10 +3002,6 @@
                         "interval": "1s",
                         "legendFormat": "RX",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -3230,10 +3022,6 @@
                         "interval": "1s",
                         "legendFormat": "TX",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -3317,10 +3105,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -3341,10 +3125,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -3365,10 +3145,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -3389,10 +3165,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "D",
@@ -3413,10 +3185,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "E",
@@ -3437,10 +3205,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "F",
@@ -3461,10 +3225,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "G",
@@ -3485,10 +3245,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "H",
@@ -3509,10 +3265,6 @@
                         "interval": "1s",
                         "legendFormat": "{{mode}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "I",
@@ -3631,10 +3383,6 @@
                         "interval": "1s",
                         "legendFormat": "Read",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -3655,10 +3403,6 @@
                         "interval": "1s",
                         "legendFormat": "Write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -3679,10 +3423,6 @@
                         "interval": "1s",
                         "legendFormat": "Total",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -3767,10 +3507,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-read",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
@@ -3791,10 +3527,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-write",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "B",
@@ -3815,10 +3547,6 @@
                         "interval": "1s",
                         "legendFormat": "{{device}}-discard",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "C",
@@ -3935,10 +3663,6 @@
                         "interval": "1s",
                         "legendFormat": "{{iface}}",
                         "range": true
-                      },
-                      "labels": {
-                        "grafana.app/export-label": "victoriametrics-metrics-datasource-1",
-                        "grafana.app/export-datasource-name": "victoriametrics-metrics-datasource"
                       }
                     },
                     "refId": "A",
